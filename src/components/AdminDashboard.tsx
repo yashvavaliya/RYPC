@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2, Eye, Search, Building2, Calendar, LogOut, Database, Loader2, Wifi, WifiOff, RefreshCw, ExternalLink, QrCode } from 'lucide-react';
+import { Plus, Edit, Trash2, Eye, Search, Building2, Calendar, LogOut, Database, Loader2, Wifi, WifiOff, RefreshCw, ExternalLink } from 'lucide-react';
 import { ReviewCard } from '../types';
 import { storage } from '../utils/storage';
 import { formatDate } from '../utils/helpers';
@@ -8,7 +8,6 @@ import { EditCardModal } from './EditCardModal';
 import { ConfirmDialog } from './ConfirmDialog';
 import { auth } from '../utils/auth';
 import { isSupabaseConfigured } from '../utils/supabase';
-import QRCode from 'react-qr-code';
 
 export const AdminDashboard: React.FC = () => {
   const [cards, setCards] = useState<ReviewCard[]>([]);
@@ -363,9 +362,7 @@ export const AdminDashboard: React.FC = () => {
                     key={card.id}
                     className="bg-white/10 backdrop-blur-md rounded-xl border border-white/20 overflow-hidden hover:bg-white/15 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl relative"
                   >
-                    <div className="flex">
-                      {/* Left side - Main content */}
-                      <div className="flex-1 p-6">
+                    <div className="p-6">
                         <div className="flex items-center mb-4">
                           <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center mr-4 shadow-lg">
                             {card.logoUrl ? (
@@ -417,23 +414,6 @@ export const AdminDashboard: React.FC = () => {
                             <Trash2 className="w-4 h-4" />
                           </button>
                         </div>
-                      </div>
-
-                      {/* Right side - QR Code */}
-                      <div className="w-24 p-4 flex flex-col items-center justify-center bg-white/5 border-l border-white/10">
-                        <div className="bg-white p-2 rounded-lg mb-2">
-                          <QRCode
-                            value={`${window.location.origin}/${card.slug}`}
-                            size={64}
-                            level="M"
-                            includeMargin={false}
-                          />
-                        </div>
-                        <div className="flex items-center text-xs text-slate-400">
-                          <QrCode className="w-3 h-3 mr-1" />
-                          <span>QR</span>
-                        </div>
-                      </div>
                     </div>
                   </div>
                 ))}
