@@ -1,6 +1,6 @@
 const AUTH_KEY = 'review_admin_auth';
 const FIXED_CREDENTIALS = {
-  mobile: '1234567890',
+  mobile: '9426479677',
   password: 'yash123'
 };
 
