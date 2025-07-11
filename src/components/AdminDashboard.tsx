@@ -252,7 +252,7 @@ export const AdminDashboard: React.FC = () => {
                         className="w-20 h-20 sm:w-12 sm:h-12 lg:w-14 lg:h-14 object-contain rounded-xl  border border-white"
                       />
                   </div>     
-            Review Cards Dashboard
+            Review Cards 
           </h1>
           <p className="text-slate-300">
             {connectionStatus === 'connected' 
