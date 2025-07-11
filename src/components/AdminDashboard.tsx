@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2, Eye, Search, Building2, Calendar, LogOut, Database, Loader2, Wifi, WifiOff, RefreshCw } from 'lucide-react';
+import { Plus, Edit, Trash2, Eye, Search, Building2, Calendar, LogOut, Database, Loader2, Wifi, WifiOff, RefreshCw, ExternalLink } from 'lucide-react';
 import { ReviewCard } from '../types';
 import { storage } from '../utils/storage';
 import { formatDate } from '../utils/helpers';
 import { CompactAddCardModal } from './CompactAddCardModal';
 import { EditCardModal } from './EditCardModal';
 import { ConfirmDialog } from './ConfirmDialog';
-import { QRCodeCard } from './QRCodeCard';
 import { auth } from '../utils/auth';
 import { isSupabaseConfigured } from '../utils/supabase';
 
@@ -145,6 +144,10 @@ export const AdminDashboard: React.FC = () => {
   );
 
   const handlePreview = (slug: string) => {
+    window.open(`/${slug}`, '_blank');
+  };
+
+  const handleViewCard = (slug: string) => {
     window.open(`/${slug}`, '_blank');
   };
 
@@ -398,6 +401,13 @@ export const AdminDashboard: React.FC = () => {
                           Preview
                         </button>
                         <button
+                          onClick={() => handleViewCard(card.slug)}
+                          className="flex-1 inline-flex items-center justify-center px-3 py-2 bg-green-600/20 text-green-400 rounded-lg hover:bg-green-600/30 transition-colors duration-200"
+                        >
+                          <ExternalLink className="w-4 h-4 mr-1" />
+                          Open
+                        </button>
+                        <button
                           onClick={() => setEditingCard(card)}
                           className="flex-1 inline-flex items-center justify-center px-3 py-2 bg-purple-600/20 text-purple-400 rounded-lg hover:bg-purple-600/30 transition-colors duration-200"
                         >
@@ -413,21 +423,6 @@ export const AdminDashboard: React.FC = () => {
                       </div>
                     </div>
                   </div>
-                ))}
-              </div>
-            </div>
-
-            {/* QR Codes Grid */}
-            <div>
-              <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
-                <div className="w-6 h-6 mr-3 bg-gradient-to-r from-blue-400 to-purple-400 rounded flex items-center justify-center">
-                  <span className="text-xs font-bold text-white">QR</span>
-                </div>
-                QR Codes ({filteredCards.length})
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {filteredCards.map((card) => (
-                  <QRCodeCard key={`qr-${card.id}`} card={card} />
                 ))}
               </div>
             </div>

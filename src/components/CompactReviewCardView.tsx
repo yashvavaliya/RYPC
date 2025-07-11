@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Copy, CheckCircle, RotateCcw, ArrowLeft, Sparkles } from 'lucide-react';
+import { Copy, CheckCircle, Sparkles, ExternalLink } from 'lucide-react';
 import { ReviewCard } from '../types';
 import { StarRating } from './StarRating';
 import { aiService } from '../utils/aiService';
-import { Link } from 'react-router-dom';
 
 interface CompactReviewCardViewProps {
   card: ReviewCard;
@@ -196,6 +195,19 @@ export const CompactReviewCardView: React.FC<CompactReviewCardViewProps> = ({ ca
               <p>1. Select your rating (1-5 stars)</p>
               <p>2. Click "Copy & Review" to copy text</p>
               <p>3. Paste in Google Maps and submit</p>
+              <p>4. Or click the link below to go directly to Google Maps</p>
+            </div>
+            
+            <div className="mt-4 pt-4 border-t border-blue-200">
+              <a
+                href={card.googleMapsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center text-sm text-blue-600 hover:text-blue-800 font-medium"
+              >
+                <ExternalLink className="w-4 h-4 mr-1" />
+                Open Google Maps Review Page
+              </a>
             </div>
           </div>
         </div>
