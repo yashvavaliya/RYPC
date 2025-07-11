@@ -92,7 +92,7 @@ const DynamicReviewCard: React.FC = () => {
             The review card for "/{slug}" doesn't exist or has been removed.
           </p>
           <p className="text-slate-400 mb-8">
-            The review card for "/{slug}" doesn't exist or has been removed.
+            Contect Admin
           </p>
           <a
             href="/LoginPage"
