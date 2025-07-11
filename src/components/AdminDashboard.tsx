@@ -239,18 +239,22 @@ export const AdminDashboard: React.FC = () => {
           </div>
 
 
-           <div className="absolute inset-0 flex items-center justify-center">            
-                      <img
-                        src="/yashv.jpg"
-                        alt="YP Logo"
-                        className="w-20 h-20 sm:w-22 sm:h-22 lg:w-22 lg:h-22 animate-pulse-gentle transform-gpu object-contain"
-                      />
-                  </div>
          
           
           
           
           <h1 className="text-4xl lg:text-5xl font-bold text-white mb-4 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+
+
+           <div className="absolute inset-0 flex items-center justify-center">            
+                      <img
+                        src="/yashv.jpg"
+                        alt="YP Logo"
+                        className="w-20 h-20 sm:w-22 sm:h-22 lg:w-22 lg:h animate-pulse-gentle transform-gpu object-contain"
+                      />
+                  </div>
+
+            
             Review Cards Dashboard
           </h1>
           <p className="text-slate-300">
