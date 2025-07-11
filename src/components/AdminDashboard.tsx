@@ -398,8 +398,8 @@ export const AdminDashboard: React.FC = () => {
                         </div>
 
                         <div className="mb-4">
-                          <p className="text-xs text-slate-400 mb-1">Category</p>
-                          <p className="text-sm text-slate-300">{card.category}</p>
+                          <p className="text-xs text-slate-400 mb-1">Category :  <p className="text-sm text-slate-300">{card.category}</p></p>
+                         
                           <p className="text-xs text-slate-400 mb-1 mt-2">Type</p>
                           <p className="text-sm text-slate-300">{card.type}</p>
                           <p className="text-xs text-slate-400 mb-1 mt-2">Created</p>
