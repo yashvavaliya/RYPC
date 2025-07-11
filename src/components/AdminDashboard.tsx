@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2, Eye, Search, Building2, Calendar, LogOut, Database, Loader2, Wifi, WifiOff, RefreshCw, ExternalLink } from 'lucide-react';
+import { Plus, Edit, Trash2, Eye, Search, Building2, Calendar, LogOut, Database, Loader2, Wifi, WifiOff, RefreshCw, ExternalLink, QrCode } from 'lucide-react';
 import { ReviewCard } from '../types';
 import { storage } from '../utils/storage';
 import { formatDate } from '../utils/helpers';
@@ -8,6 +8,7 @@ import { EditCardModal } from './EditCardModal';
 import { ConfirmDialog } from './ConfirmDialog';
 import { auth } from '../utils/auth';
 import { isSupabaseConfigured } from '../utils/supabase';
+import QRCode from 'react-qr-code';
 
 export const AdminDashboard: React.FC = () => {
   const [cards, setCards] = useState<ReviewCard[]>([]);
@@ -360,59 +361,78 @@ export const AdminDashboard: React.FC = () => {
                 {filteredCards.map((card) => (
                   <div
                     key={card.id}
-                    className="bg-white/10 backdrop-blur-md rounded-xl border border-white/20 overflow-hidden hover:bg-white/15 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl"
+                    className="bg-white/10 backdrop-blur-md rounded-xl border border-white/20 overflow-hidden hover:bg-white/15 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl relative"
                   >
-                    <div className="p-6">
-                      <div className="flex items-center mb-4">
-                        <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center mr-4 shadow-lg">
-                          {card.logoUrl ? (
-                            <img
-                              src={card.logoUrl}
-                              alt={`${card.businessName} logo`}
-                              className="w-8 h-8 object-contain"
-                            />
-                          ) : (
-                            <Building2 className="w-6 h-6 text-gray-600" />
-                          )}
+                    <div className="flex">
+                      {/* Left side - Main content */}
+                      <div className="flex-1 p-6">
+                        <div className="flex items-center mb-4">
+                          <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center mr-4 shadow-lg">
+                            {card.logoUrl ? (
+                              <img
+                                src={card.logoUrl}
+                                alt={`${card.businessName} logo`}
+                                className="w-8 h-8 object-contain"
+                              />
+                            ) : (
+                              <Building2 className="w-6 h-6 text-gray-600" />
+                            )}
+                          </div>
+                          <div className="flex-1">
+                            <h3 className="text-lg font-semibold text-white truncate">
+                              {card.businessName}
+                            </h3>
+                            <p className="text-sm text-slate-400">/{card.slug}</p>
+                          </div>
                         </div>
-                        <div className="flex-1">
-                          <h3 className="text-lg font-semibold text-white truncate">
-                            {card.businessName}
-                          </h3>
-                          <p className="text-sm text-slate-400">/{card.slug}</p>
+
+                        <div className="mb-4">
+                          <p className="text-xs text-slate-400 mb-1">Category</p>
+                          <p className="text-sm text-slate-300">{card.category}</p>
+                          <p className="text-xs text-slate-400 mb-1 mt-2">Type</p>
+                          <p className="text-sm text-slate-300">{card.type}</p>
+                          <p className="text-xs text-slate-400 mb-1 mt-2">Created</p>
+                          <p className="text-sm text-slate-300">{formatDate(card.createdAt)}</p>
+                        </div>
+
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleViewCard(card.slug)}
+                            className="flex-1 inline-flex items-center justify-center px-3 py-2 bg-green-600/20 text-green-400 rounded-lg hover:bg-green-600/30 transition-colors duration-200"
+                          >
+                            <ExternalLink className="w-4 h-4 mr-1" />
+                            Open
+                          </button>
+                          <button
+                            onClick={() => setEditingCard(card)}
+                            className="flex-1 inline-flex items-center justify-center px-3 py-2 bg-purple-600/20 text-purple-400 rounded-lg hover:bg-purple-600/30 transition-colors duration-200"
+                          >
+                            <Edit className="w-4 h-4 mr-1" />
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => setDeletingCard(card)}
+                            className="inline-flex items-center justify-center px-3 py-2 bg-red-600/20 text-red-400 rounded-lg hover:bg-red-600/30 transition-colors duration-200"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
                         </div>
                       </div>
 
-                      <div className="mb-4">
-                        <p className="text-xs text-slate-400 mb-1">Category</p>
-                        <p className="text-sm text-slate-300">{card.category}</p>
-                        <p className="text-xs text-slate-400 mb-1 mt-2">Type</p>
-                        <p className="text-sm text-slate-300">{card.type}</p>
-                        <p className="text-xs text-slate-400 mb-1 mt-2">Created</p>
-                        <p className="text-sm text-slate-300">{formatDate(card.createdAt)}</p>
-                      </div>
-
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => handleViewCard(card.slug)}
-                          className="flex-1 inline-flex items-center justify-center px-3 py-2 bg-green-600/20 text-green-400 rounded-lg hover:bg-green-600/30 transition-colors duration-200"
-                        >
-                          <ExternalLink className="w-4 h-4 mr-1" />
-                          Open
-                        </button>
-                        <button
-                          onClick={() => setEditingCard(card)}
-                          className="flex-1 inline-flex items-center justify-center px-3 py-2 bg-purple-600/20 text-purple-400 rounded-lg hover:bg-purple-600/30 transition-colors duration-200"
-                        >
-                          <Edit className="w-4 h-4 mr-1" />
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => setDeletingCard(card)}
-                          className="inline-flex items-center justify-center px-3 py-2 bg-red-600/20 text-red-400 rounded-lg hover:bg-red-600/30 transition-colors duration-200"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                      {/* Right side - QR Code */}
+                      <div className="w-24 p-4 flex flex-col items-center justify-center bg-white/5 border-l border-white/10">
+                        <div className="bg-white p-2 rounded-lg mb-2">
+                          <QRCode
+                            value={`${window.location.origin}/${card.slug}`}
+                            size={64}
+                            level="M"
+                            includeMargin={false}
+                          />
+                        </div>
+                        <div className="flex items-center text-xs text-slate-400">
+                          <QrCode className="w-3 h-3 mr-1" />
+                          <span>QR</span>
+                        </div>
                       </div>
                     </div>
                   </div>
