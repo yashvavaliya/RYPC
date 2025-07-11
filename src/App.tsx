@@ -101,8 +101,8 @@ const DynamicReviewCard: React.FC = () => {
       </div>
     );
   }
-
-  return <LoginPage card={card} />;
+  
+  return <CompactReviewCardView card={card} />;
 };
 
 export default App;
