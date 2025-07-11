@@ -120,7 +120,7 @@ export const CompactReviewCardView: React.FC<CompactReviewCardViewProps> = ({ ca
                       <img
                         src="/yashv.jpg"
                         alt="YP Logo"
-                        className="w-20 h-20 sm:w-12 sm:h-12 lg:w-10 lg:h-10 object-contain rounded-xl border-2 border-blue-500"
+                        className="w-20 h-20 sm:w-12 sm:h-12 lg:w-10 lg:h-10 object-contain rounded-xl border-2 border-gradient-to-r from-blue-400 to-purple-400"
                       />         
           
           {/* Star Rating Selector */}
