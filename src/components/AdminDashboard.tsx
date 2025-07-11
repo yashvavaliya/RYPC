@@ -244,14 +244,13 @@ export const AdminDashboard: React.FC = () => {
           
           
           <h1 className="text-4xl lg:text-5xl font-bold text-white mb-4 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-
-  <div className=" flex items-center justify-center mb-8">            
+  {/* <div className=" flex items-center justify-center mb-8">            
                       <img
                         src="/yashv.jpg"
                         alt="YP Logo"
                         className="w-20 h-20 sm:w-12 sm:h-12 lg:w-20 lg:h-20 object-contain rounded-xl  border border-white"
                       />
-                  </div>     
+                  </div>      */}
             Review Cards Dashboard
           </h1>
           <p className="text-slate-300">
