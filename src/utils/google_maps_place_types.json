@@ -1,0 +1,171 @@
+[
+  {
+    "category": "Retail & Shopping",
+    "types": [
+      "Clothing Store",
+      "Shoe Store",
+      "Electronics Store",
+      "Bookstore",
+      "Supermarket",
+      "Convenience Store",
+      "Toy Store",
+      "Furniture Store",
+      "Department Store",
+      "Shopping Mall",
+      "Jewelry Store",
+      "Mobile Phone Shop"
+    ]
+  },
+  {
+    "category": "Food & Beverage / Restaurants",
+    "types": [
+      "Restaurant",
+      "Fast Food Restaurant",
+      "Cafe",
+      "Coffee Shop",
+      "Bakery",
+      "Ice Cream Shop",
+      "Bar",
+      "Pub",
+      "Juice Shop",
+      "Street Food Stall",
+      "Buffet Restaurant"
+    ]
+  },
+  {
+    "category": "Services",
+    "types": [
+      "Hair Salon",
+      "Barber Shop",
+      "Spa",
+      "Beauty Salon",
+      "Car Repair",
+      "Car Wash",
+      "Tailor",
+      "Dry Cleaner",
+      "Electrician",
+      "Plumber",
+      "Pest Control",
+      "Internet Cafe",
+      "Courier Service"
+    ]
+  },
+  {
+    "category": "Professional Businesses",
+    "types": [
+      "Software Company",
+      "Digital Marketing Agency",
+      "Accounting Firm",
+      "Law Firm",
+      "Architectural Firm",
+      "Interior Designer",
+      "Consultant",
+      "Advertising Agency",
+      "Real Estate Agency"
+    ]
+  },
+  {
+    "category": "Health & Medical",
+    "types": [
+      "Hospital",
+      "Clinic",
+      "Dental Clinic",
+      "Eye Hospital",
+      "Physiotherapy Center",
+      "Diagnostic Center",
+      "Pathology Lab",
+      "Pharmacy",
+      "Veterinary Clinic",
+      "Ayurveda Center"
+    ]
+  },
+  {
+    "category": "Education",
+    "types": [
+      "School",
+      "High School",
+      "University",
+      "College",
+      "Coaching Center",
+      "Tuition Classes",
+      "Music School",
+      "Dance Academy",
+      "Computer Training Institute",
+      "Language School"
+    ]
+  },
+  {
+    "category": "Hotels & Travel",
+    "types": [
+      "Hotel",
+      "Motel",
+      "Guest House",
+      "Resort",
+      "Homestay",
+      "Travel Agency",
+      "Tour Operator",
+      "Car Rental",
+      "Taxi Service",
+      "Bus Station"
+    ]
+  },
+  {
+    "category": "Places of Worship",
+    "types": [
+      "Hindu Temple",
+      "Mosque",
+      "Church",
+      "Gurudwara",
+      "Jain Temple",
+      "Buddhist Monastery"
+    ]
+  },
+  {
+    "category": "Public Services & Utilities",
+    "types": [
+      "Police Station",
+      "Fire Station",
+      "Post Office",
+      "Government Office",
+      "Electricity Office",
+      "Water Supply Office",
+      "Gas Agency",
+      "Municipal Corporation"
+    ]
+  },
+  {
+    "category": "Real Estate / Property",
+    "types": [
+      "Apartment Complex",
+      "Housing Society",
+      "Builder Office",
+      "Property Dealer",
+      "Rental Office"
+    ]
+  },
+  {
+    "category": "Industrial & Manufacturing",
+    "types": [
+      "Factory",
+      "Warehouse",
+      "Workshop",
+      "Printing Press",
+      "Chemical Plant",
+      "Textile Unit"
+    ]
+  },
+  {
+    "category": "Entertainment & Recreation",
+    "types": [
+      "Movie Theater",
+      "Game Zone",
+      "Amusement Park",
+      "Water Park",
+      "Gym",
+      "Fitness Center",
+      "Sports Club",
+      "Stadium",
+      "Museum"
+    ]
+  }
+]
