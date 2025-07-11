@@ -117,7 +117,7 @@ export const CompactReviewCardView: React.FC<CompactReviewCardViewProps> = ({ ca
         {/* Main Card */}
         <div className="bg-white/95 backdrop-blur-md rounded-2xl p-6 shadow-2xl border border-white/20">
 
-           <div className=" flex items-left justify-center mb-8">            
+           <div className=" flex items-left justify-left mb-8">            
                       <img
                         src="/yashv.jpg"
                         alt="YP Logo"
