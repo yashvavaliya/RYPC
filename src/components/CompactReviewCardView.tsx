@@ -120,16 +120,11 @@ export const CompactReviewCardView: React.FC<CompactReviewCardViewProps> = ({ ca
                       <img
                         src="/yashv.jpg"
                         alt="YP Logo"
-                        className="w-20 h-20 sm:w-12 sm:h-12 lg:w-10 lg:h-10 object-contain rounded-xl border-4 border-blue-500"
+                        className="w-20 h-20 sm:w-12 sm:h-12 lg:w-10 lg:h-10 object-contain rounded-xl border-2 border-blue-500"
                       />         
           
           {/* Star Rating Selector */}
           <div className="text-center mb-6">
-               <img
-                        src="/yashv.jpg"
-                        alt="YP Logo"
-                        className="w-20 h-20 sm:w-12 sm:h-12 lg:w-10 lg:h-10 object-contain rounded-xl border-4 border-blue-500"
-                      />  
             <p className="text-gray-700 font-medium mb-3">Select Rating</p>
             <div className="flex justify-center">
               <StarRating
