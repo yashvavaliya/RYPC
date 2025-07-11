@@ -116,13 +116,15 @@ export const CompactReviewCardView: React.FC<CompactReviewCardViewProps> = ({ ca
 
         {/* Main Card */}
         <div className="bg-white/95 backdrop-blur-md rounded-2xl p-6 shadow-2xl border border-white/20">
-                     
+                     <div>
                       <img
                         src="/yashv.jpg"
                         alt="YP Logo"
                         className="w-20 h-20 sm:w-12 sm:h-12 lg:w-12 lg:h-12 object-contain rounded-xl border-6"
-                      />         
-           <p className="text-blue-200 text-sm">Review System</p>
+                      />   
+                                 <p className="text-blue-200 text-sm">Review System</p>
+
+          </div>
           
           {/* Star Rating Selector */}
           <div className="text-center mb-6">
