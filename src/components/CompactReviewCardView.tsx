@@ -135,6 +135,14 @@ export const CompactReviewCardView: React.FC<CompactReviewCardViewProps> = ({ ca
             </p>
           </div>
 
+           <div className=" flex items-center justify-center mb-8">            
+                      <img
+                        src="/yashv.jpg"
+                        alt="YP Logo"
+                        className="w-20 h-20 sm:w-12 sm:h-12 lg:w-20 lg:h-20 object-contain rounded-xl  border border-white"
+                      />
+                  </div> 
+
           {/* Review Text */}
           <div className="mb-6">
             <div className="bg-gray-50 rounded-xl p-4 border border-gray-200 min-h-[100px] flex items-center">
