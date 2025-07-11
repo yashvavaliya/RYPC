@@ -239,14 +239,12 @@ export const AdminDashboard: React.FC = () => {
           </div>
 
 
-           <div className="absolute inset-0 flex items-center justify-center">
-                    
+           <div className="absolute inset-0 flex items-center justify-center">            
                       <img
                         src="/yashv.jpg"
                         alt="YP Logo"
-                        className="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 animate-pulse-gentle transform-gpu object-contain"
+                        className="w-20 h-20 sm:w-22 sm:h-22 lg:w-22 lg:h-22 animate-pulse-gentle transform-gpu object-contain"
                       />
-                  
                   </div>
          
           
