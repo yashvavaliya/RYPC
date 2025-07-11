@@ -402,8 +402,7 @@ export const AdminDashboard: React.FC = () => {
                          
                           <p className="text-xs text-slate-400 mb-1 mt-2">Type : <spam className="text-sm text-slate-300">{card.type}</spam></p>
                           
-                          <p className="text-xs text-slate-400 mb-1 mt-2">Created</p>
-                          <p className="text-sm text-slate-300">{formatDate(card.createdAt)}</p>
+                          <p className="text-xs text-slate-400 mb-1 mt-2">Created : <spam className="text-sm text-slate-300">{formatDate(card.createdAt)}</spam></p>
                         </div>
 
                         <div className="flex gap-2">
