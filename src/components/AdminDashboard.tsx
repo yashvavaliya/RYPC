@@ -245,7 +245,7 @@ export const AdminDashboard: React.FC = () => {
           
           <h1 className="text-4xl lg:text-5xl font-bold text-white mb-4 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
 
-  <div className=" flex items-center justify-center">            
+  <div className=" flex items-center justify-center mb-8">            
                       <img
                         src="/yashv.jpg"
                         alt="YP Logo"
