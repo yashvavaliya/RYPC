@@ -237,57 +237,6 @@ export const AdminDashboard: React.FC = () => {
               </button>
             </div>
           </div>
-
-
-{/* Header */}
-        <div className="text-center mb-6">
-          <div className="inline-block relative">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 mx-auto mb-3 sm:mb-4 relative perspective-1000">
-              {/* 3D Rotating Ring */}
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 rounded-full animate-spin-continuous opacity-30 transform-gpu"></div>
-              <div className="absolute inset-1 bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 rounded-full animate-spin-reverse opacity-20 transform-gpu"></div>
-
-              {/* Main Logo Container with 3D Effect */}
-              <div className="absolute inset-2 bg-white rounded-full flex items-center justify-center shadow-3d transform hover:scale-110 transition-all duration-500 animate-float-gentle">
-                <div className="relative w-full h-full flex items-center justify-center overflow-hidden rounded-full">
-                  {/* Logo Display */}
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    {card.logoUrl ? (
-                      <img
-                        src={card.logoUrl}
-                        alt={`${card.businessName} Logo`}
-                        className="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 animate-pulse-gentle transform-gpu object-contain"
-                      />
-                    ) : (
-                      <div className="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                        <span className="text-white font-bold text-xs sm:text-sm lg:text-base">
-                          {card.businessName.charAt(0)}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* Orbiting particles */}
-              <div className="absolute inset-0 animate-spin-slow">
-                <div className="absolute -top-1 left-1/2 w-2 h-2 bg-blue-400 rounded-full opacity-60 animate-pulse"></div>
-                <div className="absolute top-1/2 -right-1 w-1.5 h-1.5 bg-purple-400 rounded-full opacity-60 animate-pulse delay-300"></div>
-                <div className="absolute -bottom-1 left-1/2 w-2 h-2 bg-pink-400 rounded-full opacity-60 animate-pulse delay-600"></div>
-                <div className="absolute top-1/2 -left-1 w-1.5 h-1.5 bg-cyan-400 rounded-full opacity-60 animate-pulse delay-900"></div>
-              </div>
-            </div>
-          </div>
-          <h1 className="text-2xl font-bold text-white mb-2 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-            {card.businessName}
-          </h1>
-          <p className="text-blue-200 text-sm">Review System</p>
-        </div>
-
-
-
-
-
           
           <h1 className="text-4xl lg:text-5xl font-bold text-white mb-4 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
             Review Cards Dashboard
