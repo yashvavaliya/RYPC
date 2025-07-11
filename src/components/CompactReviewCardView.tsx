@@ -122,6 +122,7 @@ export const CompactReviewCardView: React.FC<CompactReviewCardViewProps> = ({ ca
                         alt="YP Logo"
                         className="w-20 h-20 sm:w-12 sm:h-12 lg:w-12 lg:h-12 object-contain rounded-xl border-6"
                       />         
+           <p className="text-blue-200 text-sm">Review System</p>
           
           {/* Star Rating Selector */}
           <div className="text-center mb-6">
