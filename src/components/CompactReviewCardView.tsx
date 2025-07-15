@@ -47,8 +47,16 @@ export const CompactReviewCardView: React.FC<CompactReviewCardViewProps> = ({ ca
       setCurrentReview(review.text);
     } catch (error) {
       console.error('Failed to generate review:', error);
-      // Fallback review
-      setCurrentReview(`Great experience at ${card.businessName}! Highly recommend their ${card.type.toLowerCase()} services.`);
+      // Use contextual fallback review
+      const fallbackReview = aiService.getFallbackReview({
+        businessName: card.businessName,
+        category: card.category,
+        type: card.type,
+        starRating: rating,
+        language: language || selectedLanguage,
+        tone: tone || selectedTone
+      });
+      setCurrentReview(fallbackReview);
     } finally {
       setIsGenerating(false);
     }
