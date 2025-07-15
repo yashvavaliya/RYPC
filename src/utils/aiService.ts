@@ -82,10 +82,10 @@ export class AIReviewService {
         languageInstruction = "Write the review entirely in English.";
         break;
       case "Gujarati":
-        languageInstruction = "Write the review entirely in Gujarati script (ગુજરાતી). Do NOT use English transliteration.";
+        languageInstruction = "Write the review entirely in Gujarati script (ગુજરાતી). use English transliteration.";
         break;
       case "Hindi":
-        languageInstruction = "Write the review entirely in Hindi script (हिंदी). Do NOT use English transliteration.";
+        languageInstruction = "Write the review entirely in Hindi script (हिंदी). use English transliteration.";
         break;
       case "English + Gujarati":
         languageInstruction = "Write the review with one sentence in English followed by one sentence in Gujarati script (ગુજરાતી). Do NOT use transliteration.";
