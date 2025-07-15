@@ -13,7 +13,7 @@ export const CompactReviewCardView: React.FC<CompactReviewCardViewProps> = ({ ca
   const [currentReview, setCurrentReview] = useState('');
   const [selectedRating, setSelectedRating] = useState(5);
   const [selectedLanguage, setSelectedLanguage] = useState('English');
-  const [selectedTone, setSelectedTone] = useState<'Professional' | 'Friendly' | 'Casual'>('Friendly');
+  const [selectedTone, setSelectedTone] = useState<'Professional' | 'Friendly'>('Friendly');
   const [copied, setCopied] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
@@ -32,7 +32,7 @@ export const CompactReviewCardView: React.FC<CompactReviewCardViewProps> = ({ ca
     generateReviewForRating(5);
   }, []);
 
-  const generateReviewForRating = async (rating: number, language?: string, tone?: 'Professional' | 'Friendly' | 'Casual') => {
+  const generateReviewForRating = async (rating: number, language?: string, tone?: 'Professional' | 'Friendly') => {
     setIsGenerating(true);
     try {
       const review = await aiService.generateReview({
@@ -72,7 +72,7 @@ export const CompactReviewCardView: React.FC<CompactReviewCardViewProps> = ({ ca
     generateReviewForRating(selectedRating, language);
   };
 
-  const handleToneChange = (tone: 'Professional' | 'Friendly' | 'Casual') => {
+  const handleToneChange = (tone: 'Professional' | 'Friendly') => {
     setSelectedTone(tone);
     generateReviewForRating(selectedRating, selectedLanguage, tone);
   };
@@ -209,12 +209,11 @@ export const CompactReviewCardView: React.FC<CompactReviewCardViewProps> = ({ ca
                 <label className="block text-sm font-medium text-gray-700 mb-2">Tone</label>
                 <select
                   value={selectedTone}
-                  onChange={(e) => handleToneChange(e.target.value as 'Professional' | 'Friendly' | 'Casual')}
+                  onChange={(e) => handleToneChange(e.target.value as 'Professional' | 'Friendly')}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="Professional">Professional</option>
                   <option value="Friendly">Friendly</option>
-                  <option value="Casual">Casual</option>
                 </select>
               </div>
             )}
