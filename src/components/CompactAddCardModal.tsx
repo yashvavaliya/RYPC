@@ -25,7 +25,7 @@ export const CompactAddCardModal: React.FC<CompactAddCardModalProps> = ({ onClos
   const [aiReviewData, setAiReviewData] = useState({
     starRating: 5,
     language: 'English',
-    tone: 'Friendly' as 'Professional' | 'Friendly' | 'Casual',
+    tone: 'Friendly' as 'Professional' | 'Friendly',
     useCase: 'Customer review' as 'Customer review' | 'Student feedback' | 'Patient experience',
     highlights: '',
     generatedReview: '',
@@ -494,7 +494,6 @@ export const CompactAddCardModal: React.FC<CompactAddCardModalProps> = ({ onClos
                     >
                       <option value="Professional">Professional</option>
                       <option value="Friendly">Friendly</option>
-                      <option value="Casual">Casual</option>
                     </select>
                   </div>
 
