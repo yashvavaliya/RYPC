@@ -160,7 +160,7 @@ export const storage = {
           
           const { data, error } = await supabase
             .from('review_cards')
-            .insert([insertData])
+            .upsert([insertData], { onConflict: 'id' })
             .select();
 
           if (error) {
@@ -366,7 +366,7 @@ export const storage = {
           // Insert the card
           const { error } = await supabase
             .from('review_cards')
-            .insert([transformCardToDbInsert(card)]);
+            .upsert([transformCardToDbInsert(card)], { onConflict: 'id' });
 
           if (error) {
             console.error(`Failed to migrate card: ${card.businessName}`, error);
