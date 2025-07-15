@@ -51,7 +51,7 @@ export class AIReviewService {
         languageInstruction = "Write the review in Hindi.";
         break;
       default:
-        languageInstruction = "Write the review in English.";
+        languageInstruction = "Write the review in Gujarati in English.";
     }
 
     const prompt = `Generate a realistic Google review for "${businessName}" which is a ${type} in the ${category} category.
