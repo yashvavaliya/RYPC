@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Copy, CheckCircle, RotateCcw, ArrowLeft, Sparkles } from 'lucide-react';
+import { Copy, CheckCircle, RotateCcw, ArrowLeft, Sparkles, RefreshCw } from 'lucide-react';
 import { ReviewCard } from '../types';
 import { StarRating } from './StarRating';
 import { aiService } from '../utils/aiService';
@@ -12,15 +12,27 @@ interface CompactReviewCardViewProps {
 export const CompactReviewCardView: React.FC<CompactReviewCardViewProps> = ({ card }) => {
   const [currentReview, setCurrentReview] = useState('');
   const [selectedRating, setSelectedRating] = useState(5);
+  const [selectedLanguage, setSelectedLanguage] = useState('English');
+  const [selectedTone, setSelectedTone] = useState<'Professional' | 'Friendly' | 'Casual'>('Friendly');
   const [copied, setCopied] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(false);
+
+  const languageOptions = [
+    'English',
+    'Gujarati', 
+    'Hindi',
+    'English + Gujarati',
+    'English + Hindi',
+    'Hindi + Gujarati'
+  ];
 
   useEffect(() => {
     // Generate initial review when component loads
     generateReviewForRating(5);
   }, []);
 
-  const generateReviewForRating = async (rating: number) => {
+  const generateReviewForRating = async (rating: number, language?: string, tone?: 'Professional' | 'Friendly' | 'Casual') => {
     setIsGenerating(true);
     try {
       const review = await aiService.generateReview({
@@ -28,9 +40,11 @@ export const CompactReviewCardView: React.FC<CompactReviewCardViewProps> = ({ ca
         category: card.category,
         type: card.type,
         highlights: card.description,
-        starRating: rating
+        starRating: rating,
+        language: language || selectedLanguage,
+        tone: tone || selectedTone
       });
-      setCurrentReview(review);
+      setCurrentReview(review.text);
     } catch (error) {
       console.error('Failed to generate review:', error);
       // Fallback review
@@ -45,6 +59,16 @@ export const CompactReviewCardView: React.FC<CompactReviewCardViewProps> = ({ ca
     generateReviewForRating(rating);
   };
 
+  const handleLanguageChange = (language: string) => {
+    setSelectedLanguage(language);
+    generateReviewForRating(selectedRating, language);
+  };
+
+  const handleToneChange = (tone: 'Professional' | 'Friendly' | 'Casual') => {
+    setSelectedTone(tone);
+    generateReviewForRating(selectedRating, selectedLanguage, tone);
+  };
+
   const handleCopyAndRedirect = async () => {
     try {
       await navigator.clipboard.writeText(currentReview);
@@ -57,7 +81,29 @@ export const CompactReviewCardView: React.FC<CompactReviewCardViewProps> = ({ ca
   };
 
   const handleRegenerateReview = () => {
-    generateReviewForRating(selectedRating);
+    generateReviewForRating(selectedRating, selectedLanguage, selectedTone);
+  };
+
+  const renderReviewText = () => {
+    if (selectedLanguage.includes('+')) {
+      // For mixed languages, try to split by sentences
+      const sentences = currentReview.split(/[।.!?]+/).filter(s => s.trim());
+      return (
+        <div className="space-y-2">
+          {sentences.map((sentence, index) => (
+            <p key={index} className="text-gray-800 text-sm leading-relaxed">
+              {sentence.trim()}{index < sentences.length - 1 ? '.' : ''}
+            </p>
+          ))}
+        </div>
+      );
+    }
+    
+    return (
+      <blockquote className="text-gray-800 text-sm leading-relaxed">
+        "{currentReview}"
+      </blockquote>
+    );
   };
 
   return (
@@ -111,19 +157,11 @@ export const CompactReviewCardView: React.FC<CompactReviewCardViewProps> = ({ ca
           <h1 className="text-2xl font-bold text-white mb-2 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
             {card.businessName}
           </h1>
-          <p className="text-blue-200 text-sm">Review System</p>
+          <p className="text-blue-200 text-sm">AI-Powered Review System</p>
         </div>
 
         {/* Main Card */}
         <div className="bg-white/95 backdrop-blur-md rounded-2xl p-6 shadow-2xl border border-white/20">
-                     {/* <div>
-                      <img
-                        src="/yashv.jpg"
-                        alt="YP Logo"
-                        className="w-20 h-20 sm:w-12 sm:h-12 lg:w-12 lg:h-12 object-contain rounded-xl border-6"
-                      />         
-                  </div> */}
-
           {/* Star Rating Selector */}
           <div className="text-center mb-6">
             <p className="text-gray-700 font-medium mb-3">Select Rating</p>
@@ -143,20 +181,67 @@ export const CompactReviewCardView: React.FC<CompactReviewCardViewProps> = ({ ca
             </p>
           </div>
 
+          {/* Language & Tone Selectors */}
+          <div className="grid grid-cols-1 gap-4 mb-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Language</label>
+              <select
+                value={selectedLanguage}
+                onChange={(e) => handleLanguageChange(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                {languageOptions.map(lang => (
+                  <option key={lang} value={lang}>{lang}</option>
+                ))}
+              </select>
+            </div>
+
+            {showAdvanced && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Tone</label>
+                <select
+                  value={selectedTone}
+                  onChange={(e) => handleToneChange(e.target.value as 'Professional' | 'Friendly' | 'Casual')}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="Professional">Professional</option>
+                  <option value="Friendly">Friendly</option>
+                  <option value="Casual">Casual</option>
+                </select>
+              </div>
+            )}
+          </div>
+
+          {/* Advanced Options Toggle */}
+          <div className="text-center mb-4">
+            <button
+              onClick={() => setShowAdvanced(!showAdvanced)}
+              className="text-sm text-blue-600 hover:text-blue-800 flex items-center mx-auto"
+            >
+              {showAdvanced ? 'Hide' : 'Show'} Advanced Options
+            </button>
+          </div>
+
           {/* Review Text */}
           <div className="mb-6">
             <div className="bg-gray-50 rounded-xl p-4 border border-gray-200 min-h-[100px] flex items-center">
               {isGenerating ? (
                 <div className="flex items-center justify-center w-full">
-                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-                  <span className="ml-2 text-gray-600">Generating review...</span>
+                  <RefreshCw className="animate-spin h-6 w-6 text-blue-600 mr-2" />
+                  <span className="text-gray-600">Generating review...</span>
                 </div>
               ) : (
-                <blockquote className="text-gray-800 text-sm leading-relaxed">
-                  "{currentReview}"
-                </blockquote>
+                renderReviewText()
               )}
             </div>
+            
+            {/* Review Info */}
+            {currentReview && !isGenerating && (
+              <div className="mt-2 flex items-center justify-between text-xs text-gray-500">
+                <span>{selectedLanguage} • {selectedTone} • {selectedRating} stars</span>
+                <span>{currentReview.length} characters</span>
+              </div>
+            )}
           </div>
 
           {/* Action Buttons */}
@@ -189,7 +274,7 @@ export const CompactReviewCardView: React.FC<CompactReviewCardViewProps> = ({ ca
               className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors duration-200 disabled:opacity-50"
             >
               {isGenerating ? (
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-600"></div>
+                <RefreshCw className="w-4 h-4 animate-spin" />
               ) : (
                 <Sparkles className="w-4 h-4" />
               )}
@@ -202,8 +287,9 @@ export const CompactReviewCardView: React.FC<CompactReviewCardViewProps> = ({ ca
             <h3 className="text-sm font-semibold text-blue-900 mb-2">📱 How It Works</h3>
             <div className="space-y-1 text-xs text-blue-800">
               <p>1. Select your rating (1-5 stars)</p>
-              <p>2. Click "Copy & Review" to copy text</p>
-              <p>3. Paste in Google Maps and submit</p>
+              <p>2. Choose language and tone preferences</p>
+              <p>3. Click "Copy & Review" to copy text</p>
+              <p>4. Paste in Google Maps and submit</p>
             </div>
           </div>
         </div>
