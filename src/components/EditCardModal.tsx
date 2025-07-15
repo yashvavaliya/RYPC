@@ -26,7 +26,7 @@ export const EditCardModal: React.FC<EditCardModalProps> = ({ card, onClose, onS
   const [aiReviewData, setAiReviewData] = useState({
     starRating: 5,
     language: 'English',
-    tone: 'Friendly' as 'Professional' | 'Friendly' | 'Casual',
+    tone: 'Friendly' as 'Professional' | 'Friendly',
     useCase: 'Customer review' as 'Customer review' | 'Student feedback' | 'Patient experience',
     highlights: '',
     generatedReview: '',
@@ -497,7 +497,6 @@ export const EditCardModal: React.FC<EditCardModalProps> = ({ card, onClose, onS
                     >
                       <option value="Professional">Professional</option>
                       <option value="Friendly">Friendly</option>
-                      <option value="Casual">Casual</option>
                     </select>
                   </div>
 
