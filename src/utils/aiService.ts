@@ -10,7 +10,7 @@ export interface ReviewRequest {
   highlights?: string;
   starRating: number;
   language?: string;
-  tone?: 'Professional' | 'Friendly' | 'Casual';
+  tone?: 'Professional' | 'Friendly';
   useCase?: 'Customer review' | 'Student feedback' | 'Patient experience';
 }
 
@@ -102,7 +102,6 @@ export class AIReviewService {
     const toneInstructions = {
       'Professional': 'Use formal, professional language appropriate for business contexts.',
       'Friendly': 'Use warm, approachable language that feels personal and genuine.',
-      'Casual': 'Use relaxed, conversational language as if talking to a friend.'
     };
 
     // Use case instructions
