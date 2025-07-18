@@ -175,15 +175,13 @@ Return only the review text, no quotes or extra formatting.`;
     }
 
     // Fallback to unique hardcoded review if all attempts fail
-    return this.getFallbackReview(businessName, starRating, selectedLanguage, selectedTone, selectedServices);
+    return this.getFallbackReview(request);
   }
 
     selectedServices?: string[];
-  private getFallbackReview(businessName: string, starRating: number, language: string, tone: string, selectedServices?: string[]): GeneratedReview {
-    const timestamp = Date.now();
-    const serviceText = selectedServices && selectedServices.length > 0 
-      ? ` The ${selectedServices.slice(0, 2).join(' and ')} ${selectedServices.length === 1 ? 'was' : 'were'} particularly good.`
+  private getFallbackReview(request: ReviewRequest): GeneratedReview {
     const { businessName, category, type, selectedServices, starRating, language, tone } = request;
+    const timestamp = Date.now();
     const serviceText = selectedServices && selectedServices.length > 0 
       ? ` The ${selectedServices.slice(0, 2).join(' and ')} ${selectedServices.length === 1 ? 'was' : 'were'} particularly good.`
       : '';
