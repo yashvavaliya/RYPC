@@ -187,10 +187,7 @@ export const CompactAddCardModal: React.FC<CompactAddCardModalProps> = ({ onClos
   const languageOptions = [
     'English',
     'Gujarati', 
-    'Hindi',
-    'English + Hindi',
-    'English + Gujarati',
-    'Hindi + Gujarati'
+    'Hindi'
   ];
 
   const toneOptions = ['Friendly', 'Professional', 'Casual', 'Grateful'];
