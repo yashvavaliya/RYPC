@@ -89,7 +89,7 @@ export const ServiceSelector: React.FC<ServiceSelectorProps> = ({
             )}
 
             {/* Service text */}
-            <span className="relative z-10 capitalize font-sm">
+            <span className="relative z-10 capitalize font-light">
               {service}
             </span>
 
