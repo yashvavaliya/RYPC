@@ -128,10 +128,7 @@ export const ServiceSelector: React.FC<ServiceSelectorProps> = ({
         </div>
       )}
 
-      {/* Help text */}
-      <p className="text-xs text-gray-500 leading-relaxed">
-        💡 Select the services you want to highlight in your review. The AI will naturally incorporate these into your personalized review text.
-      </p>
+
     </div>
   );
 };
