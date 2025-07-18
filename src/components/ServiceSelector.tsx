@@ -109,7 +109,22 @@ export const ServiceSelector: React.FC<ServiceSelectorProps> = ({
             <div className="w-5 h-5 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
               <Sparkles className="w-3 h-3 text-purple-600" />
             </div>
-            
+            <div className="flex-1">
+              <p className="text-xs font-medium text-purple-800 mb-1">
+                Selected for review generation:
+              </p>
+              <div className="flex flex-wrap gap-1">
+                {selectedServices.map((service) => (
+                  <span
+                    key={service}
+                    className="inline-flex items-center px-2 py-1 bg-white/80 text-purple-700 text-xs font-medium rounded-md border border-purple-200"
+                  >
+                    {service}
+                    
+                  </span>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       )}
