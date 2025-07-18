@@ -232,6 +232,7 @@ export const CompactReviewCardView: React.FC<CompactReviewCardViewProps> = ({ ca
 
           {/* Service Selection */}
           {card.services && card.services.length > 0 && (
+      <label className="block text-sm font-medium text-gray-700 mb-2">Tone</label>
             <ServiceSelector
               services={card.services}
               selectedServices={selectedServices}
