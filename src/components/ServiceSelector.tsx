@@ -27,9 +27,9 @@ const isSelected = (service: string) => selectedServices.includes(service);
 if (services.length === 0) return null;
 
 return (
-\<div className={`flex flex-wrap gap-2 ${className}`}>
+<div className={`flex flex-wrap gap-2 ${className}`}>
 {services.map((service) => (
-\<button
+<button
 key={service}
 type="button"
 onClick={() => handleServiceToggle(service)}
@@ -42,8 +42,7 @@ className={`             px-4 py-2 text-sm rounded-full font-medium transition-a
             active:transform active:scale-95
           `}
 aria-pressed={isSelected(service)}
-role="checkbox"
-\> <div className="flex items-center gap-2"> <span className="capitalize">{service}</span>
+role="checkbox"> <div className="flex items-center gap-2"> <span className="capitalize">{service}</span>
 {isSelected(service) && <Check className="w-4 h-4 text-white" />} </div> </button>
 ))}
 {selectedServices.length > 0 && ( <div className="w-full mt-2 text-xs text-blue-600">
