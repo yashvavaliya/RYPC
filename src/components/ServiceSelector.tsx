@@ -41,7 +41,12 @@ export const ServiceSelector: React.FC<ServiceSelectorProps> = ({
           <Sparkles className="w-4 h-4 mr-2 text-purple-600" />
           Select Services to Highlight
         </label>
-      
+        {selectedServices.length > 0 && (
+          <div className="flex items-center text-xs text-purple-600 bg-purple-50 px-2 py-1 rounded-full">
+            <Check className="w-3 h-3 mr-1" />
+            {selectedServices.length} selected
+          </div>
+        )}
       </div>
 
       <div className="flex flex-wrap gap-2">
