@@ -53,10 +53,6 @@ export const CompactAddCardModal: React.FC<CompactAddCardModalProps> = ({ onClos
     setFormData(prev => ({ ...prev, services }));
   };
 
-  const handleServicesChange = (services: string[]) => {
-    setFormData(prev => ({ ...prev, services }));
-  };
-
   const handleAiDataChange = (field: string, value: string | number) => {
     setAiReviewData(prev => ({ ...prev, [field]: value }));
   };

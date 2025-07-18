@@ -9,7 +9,6 @@ export interface ReviewRequest {
   type: string;
   highlights?: string;
   selectedServices?: string[];
-  selectedServices?: string[];
   starRating: number;
   language?: string;
   tone?: 'Professional' | 'Friendly' | 'Casual' | 'Grateful';
@@ -182,13 +181,9 @@ Return only the review text, no quotes or extra formatting.`;
     return this.getFallbackReview(request);
   }
 
-    selectedServices?: string[];
   private getFallbackReview(request: ReviewRequest): GeneratedReview {
     const { businessName, category, type, selectedServices, starRating, language, tone } = request;
     const timestamp = Date.now();
-    const serviceText = selectedServices && selectedServices.length > 0 
-      ? ` The ${selectedServices.slice(0, 2).join(' and ')} ${selectedServices.length === 1 ? 'was' : 'were'} particularly good.`
-      : '';
     const serviceText = selectedServices && selectedServices.length > 0 
       ? ` The ${selectedServices.slice(0, 2).join(' and ')} ${selectedServices.length === 1 ? 'was' : 'were'} particularly good.`
       : '';
