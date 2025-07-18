@@ -322,6 +322,9 @@ export const CompactReviewCardView: React.FC<CompactReviewCardViewProps> = ({ ca
               {card.services && card.services.length > 0 && (
                 <p>2. Choose services to highlight</p>
               )}
+              {card.services && card.services.length > 0 && (
+                <p>2. Choose services to highlight</p>
+              )}
               <p>{card.services && card.services.length > 0 ? '3' : '2'}. Choose language and tone preferences</p>
               <p>{card.services && card.services.length > 0 ? '4' : '3'}. Click "Copy & Review" to copy text</p>
               <p>{card.services && card.services.length > 0 ? '5' : '4'}. Paste in Google Maps and submit</p>

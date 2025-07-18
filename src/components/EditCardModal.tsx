@@ -350,20 +350,6 @@ export const EditCardModal: React.FC<EditCardModalProps> = ({ card, onClose, onS
                 </p>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Business Services / Highlights
-                </label>
-                <TagInput
-                  tags={formData.services}
-                  onChange={handleServicesChange}
-                  placeholder="Add services like 'food quality', 'staff', 'ambiance'"
-                />
-                <p className="text-xs text-gray-500 mt-1">
-                  Add services that customers can highlight in their reviews
-                </p>
-              </div>
-
               {/* Logo Upload */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
