@@ -390,34 +390,50 @@ export const CompactAddCardModal: React.FC<CompactAddCardModalProps> = ({ onClos
               </div>
 
               {/* Google Maps URL */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Google Maps Review URL *
-                </label>
-                <div className="relative">
-                  <Link className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                  <input
-                    type="url"
-                    value={formData.googleMapsUrl}
-                    onChange={(e) => handleInputChange('googleMapsUrl', e.target.value)}
-                    placeholder="https://search.google.com/local/writereview?placeid=..."
-                    className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-all duration-300 ${
-                      errors.googleMapsUrl 
-                        ? 'border-red-500 focus:ring-red-500' 
-                        : 'border-gray-300 focus:ring-blue-500'
-                    }`}
-                  />
-                </div>
-                {errors.googleMapsUrl && (
-                  <p className="mt-1 text-sm text-red-600 flex items-center">
-                    <AlertCircle className="w-4 h-4 mr-1" />
-                    {errors.googleMapsUrl}
-                  </p>
-                )}
-                <p className="mt-1 text-xs text-gray-500">
-                  Get this URL from your Google My Business review link
-                </p>
-              </div>
+<div>
+  <label className="block text-sm font-medium text-gray-700 mb-2">
+    Google Maps Review URL *
+  </label>
+  <div className="relative">
+    <Link className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+    <div className="flex items-center">
+      <span className="pl-2 pr-1 text-sm text-gray-500">
+        https://search.google.com/local/writereview?placeid=
+      </span>
+      <input
+        type="text"
+        value={formData.googleMapsUrl}
+        onChange={(e) => handleInputChange('googleMapsUrl', e.target.value)}
+        placeholder="Enter Place ID"
+        className={`flex-1 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-all duration-300 ${
+          errors.googleMapsUrl 
+            ? 'border-red-500 focus:ring-red-500' 
+            : 'border-gray-300 focus:ring-blue-500'
+        }`}
+      />
+    </div>
+  </div>
+
+  {errors.googleMapsUrl && (
+    <p className="mt-1 text-sm text-red-600 flex items-center">
+      <AlertCircle className="w-4 h-4 mr-1" />
+      {errors.googleMapsUrl}
+    </p>
+  )}
+
+  <p className="mt-1 text-xs text-gray-500">
+    Get this Place ID from your Google My Business.{' '}
+    <a
+      href="https://developers.google.com/maps/documentation/javascript/examples/places-placeid-finder"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-blue-500 underline ml-1"
+    >
+      Find Place ID
+    </a>
+  </p>
+</div>
+
 
               {/* Actions */}
               <div className="flex gap-3 pt-4 border-t border-gray-200">
