@@ -102,16 +102,7 @@ export const ServiceSelector: React.FC<ServiceSelectorProps> = ({
         ))}
       </div>
 
-      {/* Selection summary */}
-      {selectedServices.length > 0 && (
-        <div className="mt-3 p-3 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl border border-purple-100">
-          <div className="flex items-start gap-2">
-            <div className="w-5 h-5 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-              <Sparkles className="w-3 h-3 text-purple-600" />
-            </div>
-          </div>
-        </div>
-      )}
+    
     </div>
   );
 };
