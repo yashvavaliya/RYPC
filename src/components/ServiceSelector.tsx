@@ -56,7 +56,7 @@ export const ServiceSelector: React.FC<ServiceSelectorProps> = ({
             type="button"
             onClick={() => handleServiceToggle(service)}
             className={`
-              group relative ${sizeClasses[size]} font-medium rounded-full
+              group relative ${sizeClasses[size]} font-light rounded-full
               transition-all duration-300 ease-out transform
               border-2 whitespace-nowrap min-w-0 flex items-center gap-2
               hover:scale-105 active:scale-95
