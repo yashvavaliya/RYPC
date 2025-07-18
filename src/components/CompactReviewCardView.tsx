@@ -138,7 +138,7 @@ export const CompactReviewCardView: React.FC<CompactReviewCardViewProps> = ({ ca
         <div className="absolute bottom-[10%] right-[10%] w-80 h-80 bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
       </div>
 
-      <div className="relative z-10 w-full max-w-2xl">
+      <div className="relative z-10 w-full max-w-xl">
         {/* Header */}
         <div className="text-center mb-6">
           <div className="inline-block relative">
