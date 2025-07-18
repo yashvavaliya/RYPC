@@ -2,9 +2,9 @@ import React from 'react';
 import { Check } from 'lucide-react';
 
 interface ServiceSelectorProps {
-services: string\[];
-selectedServices: string\[];
-onSelectionChange: (services: string\[]) => void;
+services: string[];
+selectedServices: string[];
+onSelectionChange: (services: string[]) => void;
 className?: string;
 }
 
