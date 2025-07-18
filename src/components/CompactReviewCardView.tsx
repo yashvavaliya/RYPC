@@ -196,13 +196,7 @@ export const CompactReviewCardView: React.FC<CompactReviewCardViewProps> = ({ ca
                 size="lg"
               />
             </div>
-            <p className="text-sm text-gray-500 mt-2">
-              {selectedRating === 1 && "Very dissatisfied"}
-              {selectedRating === 2 && "Below average"}
-              {selectedRating === 3 && "Average experience"}
-              {selectedRating === 4 && "Good experience"}
-              {selectedRating === 5 && "Excellent experience"}
-            </p>
+           
           </div>
 
           {/* Language & Tone Selectors */}
