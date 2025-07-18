@@ -18,7 +18,7 @@ const handleServiceToggle = (service: string) => {
 if (selectedServices.includes(service)) {
 onSelectionChange(selectedServices.filter(s => s !== service));
 } else {
-onSelectionChange(\[...selectedServices, service]);
+onSelectionChange([...selectedServices, service]);
 }
 };
 
