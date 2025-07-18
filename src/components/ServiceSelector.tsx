@@ -29,8 +29,9 @@ export const ServiceSelector: React.FC<ServiceSelectorProps> = ({
   return (
     <div className={`flex flex-wrap gap-2 ${className}`}>
       <label className="block text-sm font-medium text-gray-700 mb-3">
-        Select Services to Highlight
+        Select Services
       </label>
+      <div>
       {services.map((service) => (
         <button
           key={service}
@@ -65,6 +66,8 @@ export const ServiceSelector: React.FC<ServiceSelectorProps> = ({
           {selectedServices.length !== 1 ? "s" : ""} selected{" "}
         </div>
       )}{" "}
+
+        </div>
     </div>
   );
 };
