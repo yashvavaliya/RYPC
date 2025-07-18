@@ -9,9 +9,10 @@ export interface ReviewRequest {
   type: string;
   highlights?: string;
   selectedServices?: string[];
+  selectedServices?: string[];
   starRating: number;
   language?: string;
-  tone?: 'Professional' | 'Friendly';
+  tone?: 'Professional' | 'Friendly' | 'Casual' | 'Grateful';
   useCase?: 'Customer review' | 'Student feedback' | 'Patient experience';
 }
 
@@ -76,6 +77,17 @@ export class AIReviewService {
     const selectedTone = tone || 'Friendly';
     const selectedUseCase = useCase || 'Customer review';
 
+    // Build service-specific instructions
+    let serviceInstructions = '';
+    if (selectedServices && selectedServices.length > 0) {
+      serviceInstructions = `
+Customer specifically wants to highlight these services: ${selectedServices.join(', ')}
+- Mention these services naturally in the review context
+- Don't list them generically, weave them into the experience narrative
+- Focus on how these specific aspects contributed to the ${starRating}-star experience
+- Use authentic language that reflects real customer experience with these services`;
+    }
+
     // Language-specific instructions
     let languageInstruction = "";
     switch (selectedLanguage) {
@@ -103,6 +115,8 @@ export class AIReviewService {
     const toneInstructions = {
       'Professional': 'Use formal, professional language appropriate for business contexts.',
       'Friendly': 'Use warm, approachable language that feels personal and genuine.',
+      'Casual': 'Use relaxed, informal language that sounds conversational and natural.',
+      'Grateful': 'Use appreciative, thankful language that expresses genuine gratitude.'
     };
 
     // Use case instructions
@@ -111,17 +125,6 @@ export class AIReviewService {
       'Student feedback': 'Write from the perspective of a student or learner who benefited from the education/training.',
       'Patient experience': 'Write from the perspective of a patient who received medical care or treatment.'
     };
-
-    // Build service-specific instructions
-    let serviceInstructions = '';
-    if (selectedServices && selectedServices.length > 0) {
-      serviceInstructions = `
-Customer specifically wants to highlight these services: ${selectedServices.join(', ')}
-- Mention these services naturally in the review context
-- Don't list them generically, weave them into the experience narrative
-- Focus on how these specific aspects contributed to the ${starRating}-star experience
-- Use authentic language that reflects real customer experience with these services`;
-    }
 
     for (let attempt = 0; attempt < maxRetries; attempt++) {
       const prompt = `Generate a realistic Google review for "${businessName}" which is a ${type} in the ${category} category.
@@ -144,6 +147,7 @@ Requirements:
 - Make it unique - avoid common phrases or structures
 - Use varied sentence structures and vocabulary
 ${highlights ? `- Try to incorporate these highlights naturally: ${highlights}` : ''}
+${selectedServices && selectedServices.length > 0 ? `- Naturally incorporate these service experiences: ${selectedServices.join(', ')}` : ''}
 ${selectedServices && selectedServices.length > 0 ? `- Naturally incorporate these service experiences: ${selectedServices.join(', ')}` : ''}
 - ${languageInstruction}
 - For mixed languages, ensure both languages flow naturally together
@@ -182,6 +186,9 @@ Return only the review text, no quotes or extra formatting.`;
   private getFallbackReview(request: ReviewRequest): GeneratedReview {
     const { businessName, category, type, selectedServices, starRating, language, tone } = request;
     const timestamp = Date.now();
+    const serviceText = selectedServices && selectedServices.length > 0 
+      ? ` The ${selectedServices.slice(0, 2).join(' and ')} ${selectedServices.length === 1 ? 'was' : 'were'} particularly good.`
+      : '';
     const serviceText = selectedServices && selectedServices.length > 0 
       ? ` The ${selectedServices.slice(0, 2).join(' and ')} ${selectedServices.length === 1 ? 'was' : 'were'} particularly good.`
       : '';

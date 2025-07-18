@@ -6,6 +6,8 @@ import { aiService } from '../utils/aiService';
 import { StarRating } from './StarRating';
 import { SegmentedButtonGroup } from './SegmentedButtonGroup';
 import { TagInput } from './TagInput';
+import { SegmentedButtonGroup } from './SegmentedButtonGroup';
+import { TagInput } from './TagInput';
 
 interface CompactAddCardModalProps {
   onClose: () => void;
@@ -19,6 +21,7 @@ export const CompactAddCardModal: React.FC<CompactAddCardModalProps> = ({ onClos
     type: '',
     description: '',
     location: '',
+    services: [] as string[],
     services: [] as string[],
     logoUrl: '',
     googleMapsUrl: ''
@@ -46,6 +49,10 @@ export const CompactAddCardModal: React.FC<CompactAddCardModalProps> = ({ onClos
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
     }
+  };
+
+  const handleServicesChange = (services: string[]) => {
+    setFormData(prev => ({ ...prev, services }));
   };
 
   const handleServicesChange = (services: string[]) => {
@@ -88,6 +95,7 @@ export const CompactAddCardModal: React.FC<CompactAddCardModalProps> = ({ onClos
         category: formData.category,
         type: formData.type,
         highlights: aiReviewData.highlights,
+        selectedServices: formData.services,
         selectedServices: formData.services,
         starRating: aiReviewData.starRating,
         language: aiReviewData.language,
@@ -164,6 +172,7 @@ export const CompactAddCardModal: React.FC<CompactAddCardModalProps> = ({ onClos
         type: formData.type.trim(),
         description: formData.description.trim(),
         location: formData.location.trim(),
+        services: formData.services,
         services: formData.services,
         slug: generateSlug(formData.businessName),
         logoUrl: formData.logoUrl,
@@ -339,6 +348,20 @@ export const CompactAddCardModal: React.FC<CompactAddCardModalProps> = ({ onClos
               </div>
 
               {/* Business Services */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Business Services / Highlights
+                </label>
+                <TagInput
+                  tags={formData.services}
+                  onChange={handleServicesChange}
+                  placeholder="Add services like 'food quality', 'staff', 'ambiance'"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Add services that customers can highlight in their reviews
+                </p>
+              </div>
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Business Services / Highlights
