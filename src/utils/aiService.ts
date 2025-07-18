@@ -127,7 +127,7 @@ ${highlights ? `Customer highlights: ${highlights}` : ''}
 ${serviceInstructions}
 
 Requirements:
-- Write 2-5 sentences maximum
+- Write 4-8 sentences maximum
 - Sound natural and human-like with regional authenticity
 - Match the ${starRating}-star sentiment exactly
 - Be specific to the business type (${type}) and category (${category})
