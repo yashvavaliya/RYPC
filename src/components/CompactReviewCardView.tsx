@@ -34,7 +34,7 @@ export const CompactReviewCardView: React.FC<CompactReviewCardViewProps> = ({ ca
 
   useEffect(() => {
     // Generate initial review when component loads
-    generateReviewForRating(5);
+    generateReviewForRating(5, 'English', 'Friendly', []);
   }, []);
 
   const generateReviewForRating = async (
@@ -53,7 +53,8 @@ export const CompactReviewCardView: React.FC<CompactReviewCardViewProps> = ({ ca
         selectedServices: services || selectedServices,
         starRating: rating,
         language: language || selectedLanguage,
-        tone: tone || selectedTone
+        tone: tone || selectedTone,
+        useCase: 'Customer review'
       });
       setCurrentReview(review.text);
     } catch (error) {
@@ -66,7 +67,8 @@ export const CompactReviewCardView: React.FC<CompactReviewCardViewProps> = ({ ca
         selectedServices: services || selectedServices,
         starRating: rating,
         language: language || selectedLanguage,
-        tone: tone || selectedTone
+        tone: tone || selectedTone,
+        useCase: 'Customer review'
       });
       setCurrentReview(fallbackReview);
     } finally {

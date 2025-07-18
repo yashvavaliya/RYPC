@@ -184,9 +184,18 @@ Return only the review text, no quotes or extra formatting.`;
   private getFallbackReview(request: ReviewRequest): GeneratedReview {
     const { businessName, category, type, selectedServices, starRating, language, tone } = request;
     const timestamp = Date.now();
-    const serviceText = selectedServices && selectedServices.length > 0 
-      ? ` The ${selectedServices.slice(0, 2).join(' and ')} ${selectedServices.length === 1 ? 'was' : 'were'} particularly good.`
-      : '';
+    
+    // Generate service-specific text
+    let serviceText = '';
+    if (selectedServices && selectedServices.length > 0) {
+      if (selectedServices.length === 1) {
+        serviceText = ` The ${selectedServices[0]} was particularly good.`;
+      } else if (selectedServices.length === 2) {
+        serviceText = ` The ${selectedServices[0]} and ${selectedServices[1]} were particularly good.`;
+      } else {
+        serviceText = ` The ${selectedServices.slice(0, 2).join(', ')} and other services were particularly good.`;
+      }
+    }
       
     const fallbacks: Record<number, Record<string, string[]>> = {
       1: {
@@ -278,7 +287,7 @@ Return only the review text, no quotes or extra formatting.`;
     return {
       text: uniqueFallback,
       hash: this.generateHash(uniqueFallback + timestamp),
-      language: language,
+      language: language || 'English',
       rating: starRating
     };
   }
