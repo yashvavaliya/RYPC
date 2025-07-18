@@ -44,7 +44,7 @@ export const ServiceSelector: React.FC<ServiceSelectorProps> = ({
         {selectedServices.length > 0 && (
           <div className="flex items-center text-xs text-purple-600 bg-purple-50 px-2 py-1 rounded-full">
             <Check className="w-3 h-3 mr-1" />
-            {selectedServices.length} selected
+            {selectedServices.length} 
           </div>
         )}
       </div>
