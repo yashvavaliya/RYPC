@@ -6,7 +6,6 @@ import { aiService } from '../utils/aiService';
 import { StarRating } from './StarRating';
 import { SegmentedButtonGroup } from './SegmentedButtonGroup';
 import { TagInput } from './TagInput';
-import { TagInput } from './TagInput';
 
 interface CompactAddCardModalProps {
   onClose: () => void;
