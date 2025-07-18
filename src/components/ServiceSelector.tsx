@@ -6,6 +6,7 @@ interface ServiceSelectorProps {
   selectedServices: string[];
   onSelectionChange: (services: string[]) => void;
   className?: string;
+  size?: 'sm' | 'md' | 'lg';
 }
 
 export const ServiceSelector: React.FC<ServiceSelectorProps> = ({
@@ -13,7 +14,14 @@ export const ServiceSelector: React.FC<ServiceSelectorProps> = ({
   selectedServices,
   onSelectionChange,
   className = "",
+  size = 'md',
 }) => {
+  const sizeClasses = {
+    sm: 'px-3 py-1.5 text-xs',
+    md: 'px-4 py-2 text-sm',
+    lg: 'px-6 py-3 text-base'
+  };
+
   const handleServiceToggle = (service: string) => {
     if (selectedServices.includes(service)) {
       onSelectionChange(selectedServices.filter((s) => s !== service));
@@ -40,7 +48,7 @@ export const ServiceSelector: React.FC<ServiceSelectorProps> = ({
           </div>
         )}
       </div>
-      
+
       <div className="flex flex-wrap gap-2">
         {services.map((service, index) => (
           <button
@@ -48,7 +56,7 @@ export const ServiceSelector: React.FC<ServiceSelectorProps> = ({
             type="button"
             onClick={() => handleServiceToggle(service)}
             className={`
-              group relative px-4 py-2.5 text-sm font-medium rounded-full
+              group relative ${sizeClasses[size]} font-medium rounded-full
               transition-all duration-300 ease-out transform
               border-2 whitespace-nowrap min-w-0 flex items-center gap-2
               hover:scale-105 active:scale-95
@@ -75,22 +83,22 @@ export const ServiceSelector: React.FC<ServiceSelectorProps> = ({
             aria-pressed={isSelected(service)}
             role="checkbox"
           >
-            {/* Background gradient animation for selected items */}
+            {/* Background animation */}
             {isSelected(service) && (
               <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full opacity-20 animate-pulse"></div>
             )}
-            
-            {/* Service name */}
+
+            {/* Service text */}
             <span className="relative z-10 capitalize font-medium">
               {service}
             </span>
-            
-            {/* Check icon for selected items */}
+
+            {/* Check icon */}
             {isSelected(service) && (
               <Check className="relative z-10 w-4 h-4 text-white animate-bounce-gentle" />
             )}
-            
-            {/* Hover effect overlay */}
+
+            {/* Hover overlay */}
             <div className={`
               absolute inset-0 rounded-full transition-opacity duration-300
               ${isSelected(service) 
@@ -101,8 +109,6 @@ export const ServiceSelector: React.FC<ServiceSelectorProps> = ({
           </button>
         ))}
       </div>
-
-    
     </div>
   );
 };
