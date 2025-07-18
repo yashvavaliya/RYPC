@@ -185,7 +185,7 @@ export const CompactReviewCardView: React.FC<CompactReviewCardViewProps> = ({ ca
         </div>
 
         {/* Main Card */}
-        <div className="bg-white/95 backdrop-blur-md rounded-2xl p-6 shadow-2xl border border-white/20">
+        <div className="bg-white/9 backdrop-blur-md rounded-2xl p-6 shadow-2xl border border-white/20">
           {/* Star Rating Selector */}
           <div className="text-center mb-6">
             <p className="text-gray-700 font-medium mb-3">Select Rating</p>
