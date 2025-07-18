@@ -73,6 +73,7 @@ export interface Database {
           type: string;
           description: string | null;
           location: string | null;
+          services: string[] | null;
           slug: string;
           logo_url: string | null;
           google_maps_url: string;
@@ -86,6 +87,7 @@ export interface Database {
           type: string;
           description?: string | null;
           location?: string | null;
+          services?: string[] | null;
           slug: string;
           logo_url?: string | null;
           google_maps_url: string;
@@ -99,6 +101,7 @@ export interface Database {
           type?: string;
           description?: string | null;
           location?: string | null;
+          services?: string[] | null;
           slug?: string;
           logo_url?: string | null;
           google_maps_url?: string;

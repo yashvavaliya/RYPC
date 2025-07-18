@@ -4,6 +4,8 @@ import { ReviewCard } from '../types';
 import { generateSlug, validateGoogleMapsUrl } from '../utils/helpers';
 import { aiService } from '../utils/aiService';
 import { StarRating } from './StarRating';
+import { SegmentedButtonGroup } from './SegmentedButtonGroup';
+import { TagInput } from './TagInput';
 
 interface EditCardModalProps {
   card: ReviewCard;
@@ -18,6 +20,7 @@ export const EditCardModal: React.FC<EditCardModalProps> = ({ card, onClose, onS
     type: card.type,
     description: card.description || '',
     location: card.location || '',
+    services: card.services || [],
     logoUrl: card.logoUrl,
     googleMapsUrl: card.googleMapsUrl
   });
@@ -26,7 +29,7 @@ export const EditCardModal: React.FC<EditCardModalProps> = ({ card, onClose, onS
   const [aiReviewData, setAiReviewData] = useState({
     starRating: 5,
     language: 'English',
-    tone: 'Friendly' as 'Professional' | 'Friendly',
+    tone: 'Friendly' as 'Professional' | 'Friendly' | 'Casual' | 'Grateful',
     useCase: 'Customer review' as 'Customer review' | 'Student feedback' | 'Patient experience',
     highlights: '',
     generatedReview: '',
@@ -44,6 +47,10 @@ export const EditCardModal: React.FC<EditCardModalProps> = ({ card, onClose, onS
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
     }
+  };
+
+  const handleServicesChange = (services: string[]) => {
+    setFormData(prev => ({ ...prev, services }));
   };
 
   const handleAiDataChange = (field: string, value: string | number) => {
@@ -82,6 +89,7 @@ export const EditCardModal: React.FC<EditCardModalProps> = ({ card, onClose, onS
         category: formData.category,
         type: formData.type,
         highlights: aiReviewData.highlights,
+       selectedServices: formData.services,
         starRating: aiReviewData.starRating,
         language: aiReviewData.language,
         tone: aiReviewData.tone,
@@ -157,6 +165,7 @@ export const EditCardModal: React.FC<EditCardModalProps> = ({ card, onClose, onS
         type: formData.type.trim(),
         description: formData.description.trim(),
         location: formData.location.trim(),
+        services: formData.services,
         slug: generateSlug(formData.businessName),
         logoUrl: formData.logoUrl,
         googleMapsUrl: formData.googleMapsUrl.trim(),
@@ -175,10 +184,12 @@ export const EditCardModal: React.FC<EditCardModalProps> = ({ card, onClose, onS
     'English',
     'Gujarati', 
     'Hindi',
-    'English + Gujarati',
     'English + Hindi',
+    'English + Gujarati',
     'Hindi + Gujarati'
   ];
+
+  const toneOptions = ['Friendly', 'Professional', 'Casual', 'Grateful'];
 
   const categoryOptions = [
     'Retail & Shopping',
@@ -322,6 +333,21 @@ export const EditCardModal: React.FC<EditCardModalProps> = ({ card, onClose, onS
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 <p className="text-xs text-gray-500 mt-1">Optional: Helps with location-specific reviews</p>
+              </div>
+
+              {/* Business Services */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Business Services / Highlights
+                </label>
+                <TagInput
+                  tags={formData.services}
+                  onChange={handleServicesChange}
+                  placeholder="Add services like 'food quality', 'staff', 'ambiance'"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Add services that customers can highlight in their reviews
+                </p>
               </div>
 
               {/* Logo Upload */}
@@ -476,28 +502,23 @@ export const EditCardModal: React.FC<EditCardModalProps> = ({ card, onClose, onS
                   {/* Language */}
                   <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700 mb-2">Language</label>
-                    <select
-                      value={aiReviewData.language}
-                      onChange={(e) => handleAiDataChange('language', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                      {languageOptions.map(lang => (
-                        <option key={lang} value={lang}>{lang}</option>
-                      ))}
-                    </select>
+                    <SegmentedButtonGroup
+                      options={languageOptions}
+                      selected={aiReviewData.language}
+                      onChange={(value) => handleAiDataChange('language', value as string)}
+                      size="sm"
+                    />
                   </div>
 
                   {/* Tone */}
                   <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700 mb-2">Tone</label>
-                    <select
-                      value={aiReviewData.tone}
-                      onChange={(e) => handleAiDataChange('tone', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                      <option value="Professional">Professional</option>
-                      <option value="Friendly">Friendly</option>
-                    </select>
+                    <SegmentedButtonGroup
+                      options={toneOptions}
+                      selected={aiReviewData.tone}
+                      onChange={(value) => handleAiDataChange('tone', value as string)}
+                      size="sm"
+                    />
                   </div>
 
                   {/* Use Case */}

@@ -8,6 +8,7 @@ export interface ReviewRequest {
   category: string;
   type: string;
   highlights?: string;
+  selectedServices?: string[];
   starRating: number;
   language?: string;
   tone?: 'Professional' | 'Friendly';
@@ -51,7 +52,7 @@ export class AIReviewService {
   }
 
   async generateReview(request: ReviewRequest, maxRetries: number = 5): Promise<GeneratedReview> {
-    const { businessName, category, type, highlights, starRating, language, tone, useCase } = request;
+    const { businessName, category, type, highlights, selectedServices, starRating, language, tone, useCase } = request;
 
     const sentimentGuide = {
       1: "Very negative, expressing frustration and dissatisfaction with specific issues",
@@ -111,6 +112,17 @@ export class AIReviewService {
       'Patient experience': 'Write from the perspective of a patient who received medical care or treatment.'
     };
 
+    // Build service-specific instructions
+    let serviceInstructions = '';
+    if (selectedServices && selectedServices.length > 0) {
+      serviceInstructions = `
+Customer specifically wants to highlight these services: ${selectedServices.join(', ')}
+- Mention these services naturally in the review context
+- Don't list them generically, weave them into the experience narrative
+- Focus on how these specific aspects contributed to the ${starRating}-star experience
+- Use authentic language that reflects real customer experience with these services`;
+    }
+
     for (let attempt = 0; attempt < maxRetries; attempt++) {
       const prompt = `Generate a realistic Google review for "${businessName}" which is a ${type} in the ${category} category.
 
@@ -119,6 +131,7 @@ Sentiment: ${sentimentGuide[starRating as keyof typeof sentimentGuide]}
 Tone: ${selectedTone} - ${toneInstructions[selectedTone]}
 Use Case: ${selectedUseCase} - ${useCaseInstructions[selectedUseCase]}
 ${highlights ? `Customer highlights: ${highlights}` : ''}
+${serviceInstructions}
 
 Requirements:
 - Write 2-5 sentences maximum
@@ -131,6 +144,7 @@ Requirements:
 - Make it unique - avoid common phrases or structures
 - Use varied sentence structures and vocabulary
 ${highlights ? `- Try to incorporate these highlights naturally: ${highlights}` : ''}
+${selectedServices && selectedServices.length > 0 ? `- Naturally incorporate these service experiences: ${selectedServices.join(', ')}` : ''}
 - ${languageInstruction}
 - For mixed languages, ensure both languages flow naturally together
 - Use authentic regional expressions and terminology
@@ -161,17 +175,25 @@ Return only the review text, no quotes or extra formatting.`;
     }
 
     // Fallback to unique hardcoded review if all attempts fail
-    return this.getFallbackReview(businessName, starRating, selectedLanguage, selectedTone);
+    return this.getFallbackReview(businessName, starRating, selectedLanguage, selectedTone, selectedServices);
   }
 
-  private getFallbackReview(businessName: string, starRating: number, language: string, tone: string): GeneratedReview {
+    selectedServices?: string[];
+  private getFallbackReview(businessName: string, starRating: number, language: string, tone: string, selectedServices?: string[]): GeneratedReview {
     const timestamp = Date.now();
+    const serviceText = selectedServices && selectedServices.length > 0 
+      ? ` The ${selectedServices.slice(0, 2).join(' and ')} ${selectedServices.length === 1 ? 'was' : 'were'} particularly good.`
+    const { businessName, category, type, selectedServices, starRating, language, tone } = request;
+    const serviceText = selectedServices && selectedServices.length > 0 
+      ? ` The ${selectedServices.slice(0, 2).join(' and ')} ${selectedServices.length === 1 ? 'was' : 'were'} particularly good.`
+      : '';
+      
     const fallbacks: Record<number, Record<string, string[]>> = {
       1: {
         "English": [
-          `Had a disappointing experience at ${businessName}. The service was below expectations and several issues weren't addressed properly.`,
-          `Unfortunately, ${businessName} didn't meet our standards. Multiple problems occurred during our visit that left us unsatisfied.`,
-          `Not impressed with ${businessName}. The quality of service was poor and staff seemed unprofessional.`
+          `Had a disappointing experience at ${businessName}. The service was below expectations and several issues weren't addressed properly.${serviceText}`,
+          `Unfortunately, ${businessName} didn't meet our standards. Multiple problems occurred during our visit that left us unsatisfied.${serviceText}`,
+          `Not impressed with ${businessName}. The quality of service was poor and staff seemed unprofessional.${serviceText}`
         ],
         "Gujarati": [
           `${businessName} માં મારું અનુભવ નિરાશાજનક રહ્યો. સેવા અપેક્ષા કરતા ઓછી હતી અને ઘણી સમસ્યાઓ ઉકેલાઈ નહોતી.`,
@@ -229,17 +251,17 @@ Return only the review text, no quotes or extra formatting.`;
       },
       5: {
         "English": [
-          `Excellent experience at ${businessName}! Outstanding service, professional team, and exceeded expectations. Highly recommended!`,
-          `Absolutely fantastic service at ${businessName}! The team was incredibly professional and delivered beyond expectations.`,
-          `${businessName} is simply amazing! Top-notch service, friendly staff, and exceptional quality. Will definitely return!`
+          `Great experience at ${businessName}! Professional ${type} with excellent service.${serviceText} Highly recommend for ${category.toLowerCase()}.`,
+          `${businessName} exceeded expectations! Quality ${type} service with friendly staff.${serviceText} Will definitely return.`,
+          `Outstanding ${type}! ${businessName} provides top-notch ${category.toLowerCase()} service.${serviceText} Five stars!`
         ],
         "Gujarati": [
-          `${businessName} માં ઉત્તમ અનુભવ! શાનદાર સેવા, વ્યાવસાયિક ટીમ અને અપેક્ષાઓથી વધુ. ખૂબ જ ભલામણ!`,
-          `${businessName} માં અદ્ભુત સેવા મળી! ટીમ ખૂબ જ વ્યાવસાયિક હતી અને અપેક્ષાથી વધુ સારું કામ કર્યું.`
+          `${businessName} માં શાનદાર અનુભવ! વ્યાવસાયિક ${type} અને ઉત્તમ સેવા.${serviceText} ${category} માટે ભલામણ કરું છું.`,
+          `${businessName} અપેક્ષાઓથી વધુ સારું! ગુણવત્તાયુક્ત સેવા અને મિત્રતાપૂર્ણ સ્ટાફ.${serviceText} ફરીથી આવીશ.`
         ],
         "Hindi": [
-          `${businessName} में शानदार अनुभव! बेहतरीन सेवा, प्रोफेशनल टीम और उम्मीदों से बढ़कर। ज़रूर सलाह दूंगा!`,
-          `${businessName} में अद्भुत सेवा मिली! टीम बहुत प्रोफेशनल थी और उम्मीद से बेहतर काम किया।`
+          `${businessName} में बेहतरीन अनुभव! प्रोफेशनल ${type} और उत्कृष्ट सेवा.${serviceText} ${category} के लिए सिफारिश करता हूं.`,
+          `${businessName} ने उम्मीदों से बढ़कर सेवा दी! गुणवत्तापूर्ण सेवा और दोस्ताना स्टाफ.${serviceText} फिर से आऊंगा.`
         ]
       }
     };

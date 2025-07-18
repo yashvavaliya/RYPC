@@ -5,6 +5,7 @@ export interface ReviewCard {
   type: string;
   description?: string;
   location?: string;
+  services?: string[];
   slug: string;
   logoUrl: string;
   googleMapsUrl: string;

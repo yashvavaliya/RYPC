@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Copy, CheckCircle, RotateCcw, ArrowLeft, Sparkles, RefreshCw } from 'lucide-react';
 import { ReviewCard } from '../types';
 import { StarRating } from './StarRating';
+import { SegmentedButtonGroup } from './SegmentedButtonGroup';
+import { ServiceSelector } from './ServiceSelector';
 import { aiService } from '../utils/aiService';
 import { Link } from 'react-router-dom';
 
@@ -13,7 +15,8 @@ export const CompactReviewCardView: React.FC<CompactReviewCardViewProps> = ({ ca
   const [currentReview, setCurrentReview] = useState('');
   const [selectedRating, setSelectedRating] = useState(5);
   const [selectedLanguage, setSelectedLanguage] = useState('English');
-  const [selectedTone, setSelectedTone] = useState<'Professional' | 'Friendly'>('Friendly');
+  const [selectedTone, setSelectedTone] = useState<'Professional' | 'Friendly' | 'Casual' | 'Grateful'>('Friendly');
+  const [selectedServices, setSelectedServices] = useState<string[]>([]);
   const [copied, setCopied] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
@@ -22,17 +25,24 @@ export const CompactReviewCardView: React.FC<CompactReviewCardViewProps> = ({ ca
     'English',
     'Gujarati', 
     'Hindi',
-    'English + Gujarati',
     'English + Hindi',
+    'English + Gujarati',
     'Hindi + Gujarati'
   ];
+
+  const toneOptions = ['Friendly', 'Professional', 'Casual', 'Grateful'];
 
   useEffect(() => {
     // Generate initial review when component loads
     generateReviewForRating(5);
   }, []);
 
-  const generateReviewForRating = async (rating: number, language?: string, tone?: 'Professional' | 'Friendly') => {
+  const generateReviewForRating = async (
+    rating: number, 
+    language?: string, 
+    tone?: 'Professional' | 'Friendly' | 'Casual' | 'Grateful',
+    services?: string[]
+  ) => {
     setIsGenerating(true);
     try {
       const review = await aiService.generateReview({
@@ -40,6 +50,7 @@ export const CompactReviewCardView: React.FC<CompactReviewCardViewProps> = ({ ca
         category: card.category,
         type: card.type,
         highlights: card.description,
+        selectedServices: services || selectedServices,
         starRating: rating,
         language: language || selectedLanguage,
         tone: tone || selectedTone
@@ -52,6 +63,7 @@ export const CompactReviewCardView: React.FC<CompactReviewCardViewProps> = ({ ca
         businessName: card.businessName,
         category: card.category,
         type: card.type,
+        selectedServices: services || selectedServices,
         starRating: rating,
         language: language || selectedLanguage,
         tone: tone || selectedTone
@@ -64,17 +76,22 @@ export const CompactReviewCardView: React.FC<CompactReviewCardViewProps> = ({ ca
 
   const handleRatingChange = (rating: number) => {
     setSelectedRating(rating);
-    generateReviewForRating(rating);
+    generateReviewForRating(rating, selectedLanguage, selectedTone, selectedServices);
   };
 
   const handleLanguageChange = (language: string) => {
     setSelectedLanguage(language);
-    generateReviewForRating(selectedRating, language);
+    generateReviewForRating(selectedRating, language, selectedTone, selectedServices);
   };
 
-  const handleToneChange = (tone: 'Professional' | 'Friendly') => {
+  const handleToneChange = (tone: 'Professional' | 'Friendly' | 'Casual' | 'Grateful') => {
     setSelectedTone(tone);
-    generateReviewForRating(selectedRating, selectedLanguage, tone);
+    generateReviewForRating(selectedRating, selectedLanguage, tone, selectedServices);
+  };
+
+  const handleServicesChange = (services: string[]) => {
+    setSelectedServices(services);
+    generateReviewForRating(selectedRating, selectedLanguage, selectedTone, services);
   };
 
   const handleCopyAndRedirect = async () => {
@@ -89,7 +106,7 @@ export const CompactReviewCardView: React.FC<CompactReviewCardViewProps> = ({ ca
   };
 
   const handleRegenerateReview = () => {
-    generateReviewForRating(selectedRating, selectedLanguage, selectedTone);
+    generateReviewForRating(selectedRating, selectedLanguage, selectedTone, selectedServices);
   };
 
   const renderReviewText = () => {
@@ -193,31 +210,36 @@ export const CompactReviewCardView: React.FC<CompactReviewCardViewProps> = ({ ca
           <div className="grid grid-cols-1 gap-4 mb-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Language</label>
-              <select
-                value={selectedLanguage}
-                onChange={(e) => handleLanguageChange(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                {languageOptions.map(lang => (
-                  <option key={lang} value={lang}>{lang}</option>
-                ))}
-              </select>
+              <SegmentedButtonGroup
+                options={languageOptions}
+                selected={selectedLanguage}
+                onChange={(value) => handleLanguageChange(value as string)}
+                size="sm"
+              />
             </div>
 
             {showAdvanced && (
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Tone</label>
-                <select
-                  value={selectedTone}
-                  onChange={(e) => handleToneChange(e.target.value as 'Professional' | 'Friendly')}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="Professional">Professional</option>
-                  <option value="Friendly">Friendly</option>
-                </select>
+                <SegmentedButtonGroup
+                  options={toneOptions}
+                  selected={selectedTone}
+                  onChange={(value) => handleToneChange(value as 'Professional' | 'Friendly' | 'Casual' | 'Grateful')}
+                  size="sm"
+                />
               </div>
             )}
           </div>
+
+          {/* Service Selection */}
+          {card.services && card.services.length > 0 && (
+            <ServiceSelector
+              services={card.services}
+              selectedServices={selectedServices}
+              onSelectionChange={handleServicesChange}
+              className="mb-6"
+            />
+          )}
 
           {/* Advanced Options Toggle */}
           <div className="text-center mb-4">
@@ -245,7 +267,10 @@ export const CompactReviewCardView: React.FC<CompactReviewCardViewProps> = ({ ca
             {/* Review Info */}
             {currentReview && !isGenerating && (
               <div className="mt-2 flex items-center justify-between text-xs text-gray-500">
-                <span>{selectedLanguage} • {selectedTone} • {selectedRating} stars</span>
+                <span>
+                  {selectedLanguage} • {selectedTone} • {selectedRating} stars
+                  {selectedServices.length > 0 && ` • ${selectedServices.length} services`}
+                </span>
                 <span>{currentReview.length} characters</span>
               </div>
             )}
@@ -294,9 +319,12 @@ export const CompactReviewCardView: React.FC<CompactReviewCardViewProps> = ({ ca
             <h3 className="text-sm font-semibold text-blue-900 mb-2">📱 How It Works</h3>
             <div className="space-y-1 text-xs text-blue-800">
               <p>1. Select your rating (1-5 stars)</p>
-              <p>2. Choose language and tone preferences</p>
-              <p>3. Click "Copy & Review" to copy text</p>
-              <p>4. Paste in Google Maps and submit</p>
+              {card.services && card.services.length > 0 && (
+                <p>2. Choose services to highlight</p>
+              )}
+              <p>{card.services && card.services.length > 0 ? '3' : '2'}. Choose language and tone preferences</p>
+              <p>{card.services && card.services.length > 0 ? '4' : '3'}. Click "Copy & Review" to copy text</p>
+              <p>{card.services && card.services.length > 0 ? '5' : '4'}. Paste in Google Maps and submit</p>
             </div>
           </div>
         </div>
