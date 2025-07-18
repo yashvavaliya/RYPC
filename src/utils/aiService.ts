@@ -99,15 +99,6 @@ Customer specifically wants to highlight these services: ${selectedServices.join
       case "Hindi":
         languageInstruction = "Write the review entirely in Hindi script. use English transliteration.";
         break;
-      case "English + Gujarati":
-        languageInstruction = "Write the review with one sentence in English followed by one sentence in Gujarati script (ગુજરાતી). Do NOT use transliteration.";
-        break;
-      case "English + Hindi":
-        languageInstruction = "Write the review with one sentence in English followed by one sentence in Hindi script (हिंदी). Do NOT use transliteration.";
-        break;
-      case "Hindi + Gujarati":
-        languageInstruction = "Write the review with one sentence in Hindi script (हिंदी) followed by one sentence in Gujarati script (ગુજરાતી). Do NOT use transliteration.";
-        break;
     }
 
     // Tone instructions
