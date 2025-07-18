@@ -6,6 +6,7 @@ import { aiService } from '../utils/aiService';
 import { StarRating } from './StarRating';
 import { SegmentedButtonGroup } from './SegmentedButtonGroup';
 import { TagInput } from './TagInput';
+import { Link as LinkIcon } from 'lucide-react';
 
 interface CompactAddCardModalProps {
   onClose: () => void;
