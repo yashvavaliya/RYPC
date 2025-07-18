@@ -236,7 +236,7 @@ export const CompactReviewCardView: React.FC<CompactReviewCardViewProps> = ({ ca
               services={card.services}
               selectedServices={selectedServices}
               onSelectionChange={handleServicesChange}
-              className="mb-6"
+              className="mb-8"
             />
           )}
 
@@ -251,26 +251,51 @@ export const CompactReviewCardView: React.FC<CompactReviewCardViewProps> = ({ ca
           </div>
 
           {/* Review Text */}
-          <div className="mb-6">
-            <div className="bg-gray-50 rounded-xl p-4 border border-gray-200 min-h-[100px] flex items-center">
+          <div className="mb-8">
+            <div className="bg-gradient-to-br from-gray-50 to-blue-50/30 rounded-2xl p-6 border-2 border-gray-100 min-h-[120px] flex items-center shadow-inner">
               {isGenerating ? (
                 <div className="flex items-center justify-center w-full">
-                  <RefreshCw className="animate-spin h-6 w-6 text-blue-600 mr-2" />
-                  <span className="text-gray-600">Generating review...</span>
+                  <div className="text-center">
+                    <RefreshCw className="animate-spin h-8 w-8 text-blue-600 mx-auto mb-2" />
+                    <span className="text-gray-600 font-medium">Generating personalized review...</span>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Including {selectedServices.length > 0 ? `${selectedServices.length} selected services` : 'your preferences'}
+                    </p>
+                  </div>
                 </div>
               ) : (
-                renderReviewText()
+                <div className="w-full">
+                  {renderReviewText()}
+                </div>
               )}
             </div>
             
             {/* Review Info */}
             {currentReview && !isGenerating && (
-              <div className="mt-2 flex items-center justify-between text-xs text-gray-500">
-                <span>
-                  {selectedLanguage} • {selectedTone} • {selectedRating} stars
-                  {selectedServices.length > 0 && ` • ${selectedServices.length} services`}
-                </span>
-                <span>{currentReview.length} characters</span>
+              <div className="mt-4 p-3 bg-white/80 rounded-xl border border-gray-200">
+                <div className="flex items-center justify-between text-xs">
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <div className="flex items-center gap-1">
+                      <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                      <span className="font-medium">{selectedLanguage}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                      <span className="font-medium">{selectedTone}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
+                      <span className="font-medium">{selectedRating} stars</span>
+                    </div>
+                    {selectedServices.length > 0 && (
+                      <div className="flex items-center gap-1">
+                        <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                        <span className="font-medium">{selectedServices.length} services</span>
+                      </div>
+                    )}
+                  </div>
+                  <span className="text-gray-500 font-mono">{currentReview.length} chars</span>
+                </div>
               </div>
             )}
           </div>
@@ -314,16 +339,20 @@ export const CompactReviewCardView: React.FC<CompactReviewCardViewProps> = ({ ca
           </div>
 
           {/* Instructions */}
-          <div className="mt-6 p-4 bg-blue-50 rounded-xl border border-blue-200">
-            <h3 className="text-sm font-semibold text-blue-900 mb-2">📱 How It Works</h3>
-            <div className="space-y-1 text-xs text-blue-800">
+          <div className="mt-8 p-5 bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl border-2 border-blue-100">
+            <h3 className="text-sm font-bold text-blue-900 mb-3 flex items-center">
+              <span className="text-lg mr-2">🚀</span>
+              How It Works
+            </h3>
+            <div className="space-y-2 text-xs text-blue-800">
               <p>1. Select your rating (1-5 stars)</p>
+              <p>2. Choose your preferred language</p>
               {card.services && card.services.length > 0 && (
-                <p>2. Choose services to highlight</p>
+                <p>3. Pick services you want to highlight</p>
               )}
-              <p>{card.services && card.services.length > 0 ? '3' : '2'}. Choose language and tone preferences</p>
-              <p>{card.services && card.services.length > 0 ? '4' : '3'}. Click "Copy & Review" to copy text</p>
-              <p>{card.services && card.services.length > 0 ? '5' : '4'}. Paste in Google Maps and submit</p>
+              <p>{card.services && card.services.length > 0 ? '4' : '3'}. Adjust tone if needed (Advanced Options)</p>
+              <p>{card.services && card.services.length > 0 ? '5' : '4'}. Click "Copy & Review" to copy your personalized text</p>
+              <p>{card.services && card.services.length > 0 ? '6' : '5'}. Paste in Google Maps and submit your review</p>
             </div>
           </div>
         </div>
