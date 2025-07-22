@@ -94,7 +94,7 @@ Customer specifically wants to highlight these services: ${selectedServices.join
         languageInstruction = "Please provide a two-sentence business review entirely in Gujarati, but written using English transliteration.";
         break;
       case "Hindi":
-        languageInstruction = "Write the review entirely in Hindi. use English transliteration.";
+        languageInstruction = "Please provide a two-sentence business review entirely in Hindi, but written using English transliteration.";
         break;
     }
 
