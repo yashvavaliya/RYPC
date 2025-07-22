@@ -91,10 +91,10 @@ Customer specifically wants to highlight these services: ${selectedServices.join
         languageInstruction = "Write the review entirely in English.";
         break;
       case "Gujarati":
-        languageInstruction = "Please provide a two-sentence business review entirely in Gujarati, but written using English transliteration.";
+        languageInstruction = "Write the review entirely in Gujarati. use English transliteration.";
         break;
       case "Hindi":
-        languageInstruction = "Please provide a two-sentence business review entirely in Hindi, but written using English transliteration.";
+        languageInstruction = "Write the review entirely in Hindi. use English transliteration.";
         break;
     }
 
@@ -124,7 +124,7 @@ ${highlights ? `Customer highlights: ${highlights}` : ''}
 ${serviceInstructions}
 
 Requirements:
-- Write 2-3 sentences maximum
+- Write 3-4 sentences maximum
 - Sound natural and human-like with regional authenticity
 - Match the ${starRating}-star sentiment exactly
 - Be specific to the business type (${type}) and category (${category})
