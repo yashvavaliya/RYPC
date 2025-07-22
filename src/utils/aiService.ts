@@ -193,7 +193,7 @@ Return only the review text, no quotes or extra formatting.`;
           `Not impressed with ${businessName}. The quality of service was poor and staff seemed unprofessional.${serviceText}`
         ],
         "Gujarati": [
-          `${businessName} માં મારું અનુભવ નિરાશાજનક રહ્યો. સેવા અપેક્ષા કરતા ઓછી હતી અને ઘણી સમસ્યાઓ ઉકેલાઈ નહોતી.`,
+          `${businessName} ma maro. સેવા અપેક્ષા કરતા ઓછી હતી અને ઘણી સમસ્યાઓ ઉકેલાઈ નહોતી.`,
           `${businessName} માં સેવા સારી નહોતી. અમારી અપેક્ષાઓ પૂરી થઈ નહીં અને કર્મચારીઓ પણ સહકારી નહોતા.`
         ],
         "Hindi": [
