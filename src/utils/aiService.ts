@@ -67,9 +67,6 @@ export class AIReviewService {
       "English",
       "Gujarati",
       "Hindi", 
-      "English + Gujarati",
-      "English + Hindi",
-      "Hindi + Gujarati"
     ];
     
     const selectedLanguage = language || languageOptions[Math.floor(Math.random() * languageOptions.length)];
