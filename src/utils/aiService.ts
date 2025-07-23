@@ -91,10 +91,16 @@ Customer specifically wants to highlight these services: ${selectedServices.join
         languageInstruction = "Write the review entirely in English.";
         break;
       case "Gujarati":
-        languageInstruction = "Write the review entirely in Gujarati. use English transliteration.";
+        languageInstruction = `Write the review entirely in Gujarati using English transliteration. 
+        IMPORTANT: Do NOT start the sentence with the business name "${businessName}". 
+        The business name can appear in the middle or end of sentences, but never at the beginning.
+        Example patterns: "Maru experience ${businessName} ma khub saaru rahyu" or "Khub saari seva mali ${businessName} thi"`;
         break;
       case "Hindi":
-        languageInstruction = "Write the review entirely in Hindi. use English transliteration.";
+        languageInstruction = `Write the review entirely in Hindi using English transliteration.
+        IMPORTANT: Do NOT start the sentence with the business name "${businessName}".
+        The business name can appear in the middle or end of sentences, but never at the beginning.
+        Example patterns: "Mera anubhav ${businessName} mein bahut accha raha" or "Bahut acchi seva mili ${businessName} se"`;
         break;
     }
 
@@ -124,25 +130,14 @@ ${highlights ? `Customer highlights: ${highlights}` : ''}
 ${serviceInstructions}
 
 Requirements:
-- Write 2-3 sentences maximum
-- Write minimum - 155 word's amd maximum - 170 word's(not write more words).
-- Gujarati sentence in not required to this name first ${businessName}. like this ${businessName} middle,last.
-- Hindi sentence in not required to this name first ${businessName}. like this ${businessName} middle,last.
-- Sound natural and human-like with regional authenticity
-- Match the ${starRating}-star sentiment exactly
-- Be specific to the business type (${type}) and category (${category})
-- Use realistic customer language for ${selectedUseCase}
-- No fake exaggeration, keep it credible and locally relevant
-- Don't mention the star rating in the text
-- Make it unique - avoid common phrases or structures
-- Use varied sentence structures and vocabulary
-${highlights ? `- Try to incorporate these highlights naturally: ${highlights}` : ''}
-${selectedServices && selectedServices.length > 0 ? `- Naturally incorporate these service experiences: ${selectedServices.join(', ')}` : ''}
+- Each sentence should have different structure and approach
+- Vary the placement of business name within sentences
+- Use different emotional expressions and descriptive words
 ${selectedServices && selectedServices.length > 0 ? `- Naturally incorporate these service experiences: ${selectedServices.join(', ')}` : ''}
 - ${languageInstruction}
-- For mixed languages, ensure both languages flow naturally together
-- Use authentic regional expressions and terminology
-- Avoid generic templates or repetitive structures
+- Create genuine, personal experiences that feel real
+- Use specific details that make the review believable
+- Ensure each generation is completely different from previous ones
 
 Return only the review text, no quotes or extra formatting.`;
 
@@ -191,77 +186,79 @@ Return only the review text, no quotes or extra formatting.`;
     const fallbacks: Record<number, Record<string, string[]>> = {
       1: {
         "English": [
-          `Had a disappointing experience at ${businessName}. The service was below expectations and several issues weren't addressed properly.${serviceText}`,
-          `Unfortunately, ${businessName} didn't meet our standards. Multiple problems occurred during our visit that left us unsatisfied.${serviceText}`,
-          `Not impressed with ${businessName}. The quality of service was poor and staff seemed unprofessional.${serviceText}`
+          `Had a disappointing experience with the service quality. ${businessName} didn't meet our expectations and several issues weren't addressed properly.${serviceText}`,
+          `The service was below average during our recent visit. Multiple problems occurred at ${businessName} that left us unsatisfied.${serviceText}`,
+          `Quality of service was poor and staff seemed unprofessional. Not impressed with the overall experience at ${businessName}.${serviceText}`
         ],
         "Gujarati": [
-          `${businessName} ma maru anubhav nirashajanak rahyo. Seva apeksha karta ochhi hati ane ghani samasyao ukelai nathi.`,
-          `${businessName} ma seva sari nathi hati. Amari apekshao poori thai nathi ane karmachariyo pan sahkaari nathi.`
+          `Maru anubhav ${businessName} ma nirashajanak rahyo. Seva apeksha karta ochhi hati ane ghani samasyao ukelai nathi.`,
+          `Seva sari nathi hati ${businessName} ma. Amari apekshao poori thai nathi ane karmachariyo pan sahkaari nathi.`,
+          `Khub nirash thayo ${businessName} ni seva thi. Gunvatta ane vyavastha banne ma sudharani jarur chhe.`
         ],
         "Hindi": [
-          `${businessName} mein mera anubhav niraashajanak raha. Seva umeed se kam thi aur kai samasyaon ka samaadhan nahi hua.`,
-          `${businessName} mein seva achhi nahi thi. Hamari apekshaen poori nahi hui aur staff bhi sahayak nahi tha.`
+          `Mera anubhav ${businessName} mein niraashajanak raha. Seva umeed se kam thi aur kai samasyaon ka samaadhan nahi hua.`,
+          `Seva achhi nahi thi ${businessName} mein. Hamari apekshaen poori nahi hui aur staff bhi sahayak nahi tha.`,
+          `Bahut nirash hua ${businessName} ki seva se. Gunvatta aur vyavastha dono mein sudhaar ki zarurat hai.`
         ]
       },
       2: {
         "English": [
-          `${businessName} was okay but had some problems. The staff tried to help but there's definitely room for improvement.`,
-          `Mixed experience at ${businessName}. Some aspects were good but several issues need attention.`,
-          `${businessName} has potential but needs to work on service quality and customer satisfaction.`
+          `The experience was okay but had some problems. Staff at ${businessName} tried to help but there's definitely room for improvement.`,
+          `Mixed feelings about our visit to ${businessName}. Some aspects were good but several issues need attention.`,
+          `Service has potential but ${businessName} needs to work on quality and customer satisfaction.`
         ],
         "Gujarati": [
-          `${businessName} saaru hatu pan ketlik samasyao hati. Staff-e madad karvano prayas karyo pan sudharani jarur chhe.`,
-          `${businessName} ma mishr anubhav rahyo. Ketlik vastuo sari hati pan sudharani jarur chhe.`
+          `Anubhav saaru hatu pan ${businessName} ma ketlik samasyao hati. Staff-e madad karvano prayas karyo pan sudharani jarur chhe.`,
+          `Mishr anubhav rahyo ${businessName} ma. Ketlik vastuo sari hati pan sudharani jarur chhe.`
         ],
         "Hindi": [
-          `${businessName} theek tha lekin kuch samasyaayein thin. Staff ne madad karne ki koshish ki lekin sudhaar ki zarurat hai.`,
-          `${businessName} mein mila-jula anubhav raha. Kuch cheezein acchi thin lekin sudhaar ki gunjaayish hai.`
+          `Anubhav theek tha lekin ${businessName} mein kuch samasyaayein thin. Staff ne madad karne ki koshish ki lekin sudhaar ki zarurat hai.`,
+          `Mila-jula anubhav raha ${businessName} mein. Kuch cheezein acchi thin lekin sudhaar ki gunjaayish hai.`
         ]
       },
       3: {
         "English": [
-          `Average experience at ${businessName}. Some things were good, others could be better. Decent overall.`,
-          `${businessName} provides standard service. Nothing exceptional but gets the job done.`,
-          `Okay experience at ${businessName}. Met basic expectations but nothing stood out particularly.`
+          `Average experience with decent service quality. Some things were good at ${businessName}, others could be better overall.`,
+          `Standard service that gets the job done. Nothing exceptional but ${businessName} meets basic requirements.`,
+          `Okay experience that met basic expectations. Nothing stood out particularly at ${businessName} but it was acceptable.`
         ],
         "Gujarati": [
-          `${businessName} ma saamanya anubhav rahyo. Ketlik vastuon saari hati, ketlik sudhari shakay.`,
-          `${businessName} ma madhyam seva mali. Kai khaas nathi pan kaam chali jay evu.`
+          `Saamanya anubhav rahyo ${businessName} ma. Ketlik vastuon saari hati, ketlik sudhari shakay.`,
+          `Madhyam seva mali ${businessName} ma. Kai khaas nathi pan kaam chali jay evu.`
         ],
         "Hindi": [
-          `${businessName} mein ausat anubhav raha. Kuch cheezein acchi thin, kuch behtar ho sakti thin.`,
-          `${businessName} mein saamaanya seva mili. Kuch khaas nahin lekin kaam chal jaata hai.`
+          `Ausat anubhav raha ${businessName} mein. Kuch cheezein acchi thin, kuch behtar ho sakti thin.`,
+          `Saamaanya seva mili ${businessName} mein. Kuch khaas nahin lekin kaam chal jaata hai.`
         ]
       },
       4: {
         "English": [
-          `Good experience at ${businessName}. Professional service and quality work, just a minor wait time.`,
-          `Really satisfied with ${businessName}. Great service quality and friendly staff. Highly recommend.`,
-          `${businessName} exceeded expectations. Professional approach and excellent customer service.`
+          `Good experience with professional service and quality work. Just a minor wait time at ${businessName} but overall excellent.`,
+          `Really satisfied with the great service quality and friendly staff. Highly recommend ${businessName} to others.`,
+          `Professional approach and excellent customer service exceeded expectations. Very happy with ${businessName}.`
         ],
         "Gujarati": [
-          `${businessName} ma saaro anubhav rahyo. Vyavsayik seva ane gunvattayukt kaam, matra thodi raah jovvi padi`,
-          `${businessName} ma khub sari seva mali. Karmachariyo madadgar hata ane kaam pan saru thayo.`
+          `Saaro anubhav rahyo ${businessName} ma. Vyavsayik seva ane gunvattayukt kaam, matra thodi raah jovvi padi.`,
+          `Khub sari seva mali ${businessName} ma. Karmachariyo madadgar hata ane kaam pan saru thayo.`
         ],
         "Hindi": [
-          `${businessName} mein accha anubhav raha. Professional service aur quality work, bas thoda intezaar karna pada.`,
-          `${businessName} mein bahut acchi seva mili. Staff sahyogi tha aur kaam bhi behtareen hua.`
+          `Accha anubhav raha ${businessName} mein. Professional service aur quality work, bas thoda intezaar karna pada.`,
+          `Bahut acchi seva mili ${businessName} mein. Staff sahyogi tha aur kaam bhi behtareen hua.`
         ]
       },
       5: {
         "English": [
-          `Great experience at ${businessName}! Professional ${type} with excellent service.${serviceText} Highly recommend for ${category.toLowerCase()}.`,
-          `${businessName} exceeded expectations! Quality ${type} service with friendly staff.${serviceText} Will definitely return.`,
-          `Outstanding ${type}! ${businessName} provides top-notch ${category.toLowerCase()} service.${serviceText} Five stars!`
+          `Great experience with professional ${type} service! Excellent quality and friendly staff at ${businessName}.${serviceText} Highly recommend for ${category.toLowerCase()}.`,
+          `Quality ${type} service exceeded all expectations! Friendly staff and great experience at ${businessName}.${serviceText} Will definitely return.`,
+          `Outstanding service and top-notch ${category.toLowerCase()} experience! Really impressed with ${businessName}.${serviceText} Absolutely recommended!`
         ],
         "Gujarati": [
-          `${businessName} ma shaandaar anubhav! Vyavsayik ${type} ane uttam seva.${serviceText} ${category} mate bhalaman karu chhu.`,
-          `${businessName} apekshaao thi vadhu saaru! Gunvattayukt seva ane mitratapurn staff.${serviceText} farithi aavish.`
+          `Shaandaar anubhav rahyo ${businessName} ma! Vyavsayik ${type} ane uttam seva.${serviceText} ${category} mate bhalaman karu chhu.`,
+          `Apekshaao thi vadhu saaru ${businessName} ma! Gunvattayukt seva ane mitratapurn staff.${serviceText} Farithi aavish.`
         ],
         "Hindi": [
-          `${businessName} mein behtareen anubhav! Professional ${type} aur utkrist seva.${serviceText} ${category} ke liye sifarish karta hoon.`,
-          `${businessName} ne ummeedon se badhkar seva di! Gunvattaapoorn seva aur dostana staff.${serviceText} phir se aaunga.`
+          `Behtareen anubhav raha ${businessName} mein! Professional ${type} aur utkrist seva.${serviceText} ${category} ke liye sifarish karta hoon.`,
+          `Ummeedon se badhkar seva mili ${businessName} mein! Gunvattaapoorn seva aur dostana staff.${serviceText} Phir se aaunga.`
         ]
       }
     };
