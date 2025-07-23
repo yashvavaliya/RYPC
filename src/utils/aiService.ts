@@ -193,12 +193,13 @@ Return only the review text, no quotes or extra formatting.`;
           `Not impressed with ${businessName}. The quality of service was poor and staff seemed unprofessional.${serviceText}`
         ],
         "Gujarati": [
-          `${businessName} ma maro. સેવા અપેક્ષા કરતા ઓછી હતી અને ઘણી સમસ્યાઓ ઉકેલાઈ નહોતી.`,
-          `${businessName} માં સેવા સારી નહોતી. અમારી અપેક્ષાઓ પૂરી થઈ નહીં અને કર્મચારીઓ પણ સહકારી નહોતા.`
+          `${businessName} ma maru anubhav nirashajanak rahyo. Seva apeksha karta ochhi hati ane ghani samasyao ukelai nathi.`,
+          `${businessName} ma seva sari nathi hati. Amari apekshao poori thai nathi ane karmachariyo pan sahkaari natha.`
         ],
         "Hindi": [
-          `${businessName} में मेरा अनुभव निराशाजनक रहा। सेवा उम्मीद से कम थी और कई समस्याओं का समाधान नहीं हुआ।`,
-          `${businessName} में सेवा अच्छी नहीं थी। हमारी अपेक्षाएं पूरी नहीं हुईं और स्टाफ भी सहयोगी नहीं था।`
+          `${businessName} mein mera anubhav niraashajanak raha. Seva umeed se kam thi aur kai samasyaon ka samaadhan nahi hua.`,
+  `${businessName} mein seva acchi nahi thi. Hamari apekshaayein poori nahi huiin aur staff bhi sahayogi nahi tha.``
+
         ]
       },
       2: {
