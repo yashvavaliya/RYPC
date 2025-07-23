@@ -239,7 +239,7 @@ Return only the review text, no quotes or extra formatting.`;
         ],
         "Gujarati": [
           `Saaro anubhav rahyo ${businessName} ma. Vyavsayik seva ane gunvattayukt kaam, matra thodi raah jovvi padi.`,
-          `Khub sari seva mali ${businessName} ma. Karmachariyo madadgar hata ane kaam pan saru thayo.`
+          `Khub sari seva mali. Karmachariyo madadgar hata ane kaam pan saru thayo.`
         ],
         "Hindi": [
           `Accha anubhav raha ${businessName} mein. Professional service aur quality work, bas thoda intezaar karna pada.`,
