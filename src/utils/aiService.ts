@@ -124,7 +124,10 @@ ${highlights ? `Customer highlights: ${highlights}` : ''}
 ${serviceInstructions}
 
 Requirements:
-- Write 3-4 sentences maximum
+- Write 2-3 sentences maximum
+- Write minimum - 155 word's amd maximum - 170 word's(not write more words).
+- Gujarati sentence in not required to this name first ${businessName}. like this ${businessName} middle,last.
+- Hindi sentence in not required to this name first ${businessName}. like this ${businessName} middle,last.
 - Sound natural and human-like with regional authenticity
 - Match the ${starRating}-star sentiment exactly
 - Be specific to the business type (${type}) and category (${category})
