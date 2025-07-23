@@ -127,17 +127,12 @@ Sentiment: ${sentimentGuide[starRating as keyof typeof sentimentGuide]}
 Tone: ${selectedTone} - ${toneInstructions[selectedTone]}
 Use Case: ${selectedUseCase} - ${useCaseInstructions[selectedUseCase]}
 ${highlights ? `Customer highlights: ${highlights}` : ''}
-${serviceInstructions}
-
-Requirements:
 - Each sentence should have different structure and approach
 - Vary the placement of business name within sentences
 - Use different emotional expressions and descriptive words
 ${selectedServices && selectedServices.length > 0 ? `- Naturally incorporate these service experiences: ${selectedServices.join(', ')}` : ''}
 - ${languageInstruction}
-- Create genuine, personal experiences that feel real
 - Use specific details that make the review believable
-- Ensure each generation is completely different from previous ones
 
 Return only the review text, no quotes or extra formatting.`;
 
