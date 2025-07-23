@@ -198,8 +198,7 @@ Return only the review text, no quotes or extra formatting.`;
         ],
         "Hindi": [
           `${businessName} mein mera anubhav niraashajanak raha. Seva umeed se kam thi aur kai samasyaon ka samaadhan nahi hua.`,
-  `${businessName} mein seva acchi nahi thi. Hamari apekshaayein poori nahi huiin aur staff bhi sahayogi nahi tha.``
-
+          `${businessName} mein seva acchi nahi thi. Hamari apekshaayein poori nahi huiin aur staff bhi sahayogi nahi tha.`
         ]
       },
       2: {
@@ -209,12 +208,12 @@ Return only the review text, no quotes or extra formatting.`;
           `${businessName} has potential but needs to work on service quality and customer satisfaction.`
         ],
         "Gujarati": [
-          `${businessName} સારું હતું પણ કેટલીક સમસ્યાઓ હતી. સ્ટાફે મદદ કરવાનો પ્રયાસ કર્યો પણ સુધારાની જરૂર છે.`,
-          `${businessName} માં મિશ્ર અનુભવ રહ્યો. કેટલીક વસ્તુઓ સારી હતી પણ સુધારાની જરૂર છે.`
+          '${businessName} saaru hatu pan ketlik samasyao hati. Staff-e madad karvano prayas karyo pan sudharani jarur chhe.',
+          `${businessName} ma mishra anubhav rahyo. Ketlik vastuon saari hati pan sudharani jarur chhe.`
         ],
         "Hindi": [
-          `${businessName} ठीक था लेकिन कुछ समस्याएँ थीं। स्टाफ ने मदद करने की कोशिश की लेकिन सुधार की जरूरत है।`,
-          `${businessName} में मिला-जुला अनुभव रहा। कुछ चीजें अच्छी थीं लेकिन सुधार की गुंजाइश है।`
+          `${businessName} theek tha lekin kuch samasyaayein thin. Staff ne madad karne ki koshish ki lekin sudhaar ki zarurat hai.`,
+          `${businessName} mein mila-jula anubhav raha. Kuch cheezein acchi thin lekin sudhaar ki gunjaayish hai.`
         ]
       },
       3: {
@@ -224,12 +223,12 @@ Return only the review text, no quotes or extra formatting.`;
           `Okay experience at ${businessName}. Met basic expectations but nothing stood out particularly.`
         ],
         "Gujarati": [
-          `${businessName} માં સામાન્ય અનુભવ રહ્યો. કેટલીક વસ્તુઓ સારી હતી, કેટલીક સુધારી શકાય.`,
-          `${businessName} માં મધ્યમ સેવા મળી. કંઈ ખાસ નહીં પણ કામ ચાલી જાય એવું.`
+          `${businessName} ma saamanya anubhav rahyo. Ketlik vastuon saari hati, ketlik sudhari shakay.`,
+          `${businessName} ma madhyam seva mali. Kai khaas nathi pan kaam chali jay evu.`
         ],
         "Hindi": [
-          `${businessName} में औसत अनुभव रहा। कुछ चीजें अच्छी थीं, कुछ बेहतर हो सकती थीं।`,
-          `${businessName} में सामान्य सेवा मिली। कुछ खास नहीं लेकिन काम चल जाता है।`
+          `${businessName} mein ausat anubhav raha. Kuch cheezein acchi thin, kuch behtar ho sakti thin.`,
+          `${businessName} mein saamaanya seva mili. Kuch khaas nahin lekin kaam chal jaata hai.`
         ]
       },
       4: {
