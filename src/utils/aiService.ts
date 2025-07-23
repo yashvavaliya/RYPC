@@ -194,11 +194,11 @@ Return only the review text, no quotes or extra formatting.`;
         ],
         "Gujarati": [
           `${businessName} ma maru anubhav nirashajanak rahyo. Seva apeksha karta ochhi hati ane ghani samasyao ukelai nathi.`,
-          `${businessName} ma seva sari nathi hati. Amari apekshao poori thai nathi ane karmachariyo pan sahkaari natha.`
+          `${businessName} ma seva sari nathi hati. Amari apekshao poori thai nathi ane karmachariyo pan sahkaari nathi.`
         ],
         "Hindi": [
           `${businessName} mein mera anubhav niraashajanak raha. Seva umeed se kam thi aur kai samasyaon ka samaadhan nahi hua.`,
-          `${businessName} mein seva acchi nahi thi. Hamari apekshaayein poori nahi huiin aur staff bhi sahayogi nahi tha.`
+          `${businessName} mein seva achhi nahi thi. Hamari apekshaen poori nahi hui aur staff bhi sahayak nahi tha.`
         ]
       },
       2: {
@@ -208,12 +208,12 @@ Return only the review text, no quotes or extra formatting.`;
           `${businessName} has potential but needs to work on service quality and customer satisfaction.`
         ],
         "Gujarati": [
-          '${businessName} saaru hatu pan ketlik samasyao hati. Staff-e madad karvano prayas karyo pan sudharani jarur chhe.',
-          `${businessName} ma mishra anubhav rahyo. Ketlik vastuon saari hati pan sudharani jarur chhe.`
+          `${businessName} saaru hatu pan ketlik samasyao hati. Staff-e madad karvano prayas karyo pan sudharani jarur chhe.`,
+          `${businessName} ma mishr anubhav rahyo. Ketlik vastuo sari hati pan sudharani jarur chhe.`
         ],
         "Hindi": [
           `${businessName} theek tha lekin kuch samasyaayein thin. Staff ne madad karne ki koshish ki lekin sudhaar ki zarurat hai.`,
-          `${businessName} mein mila-jula anubhav raha. Kuch cheezein acchi thin lekin sudhaar ki gunjaayish hai.`
+          `${businessName} mein mila-jula anubhav raha. Kuch cheezein acchi thin lekin sudhaar ki gunjaayish hai.`
         ]
       },
       3: {
@@ -228,7 +228,7 @@ Return only the review text, no quotes or extra formatting.`;
         ],
         "Hindi": [
           `${businessName} mein ausat anubhav raha. Kuch cheezein acchi thin, kuch behtar ho sakti thin.`,
-          `${businessName} mein saamaanya seva mili. Kuch khaas nahin lekin kaam chal jaata hai.`
+          `${businessName} mein saamaanya seva mili. Kuch khaas nahin lekin kaam chal jaata hai.`
         ]
       },
       4: {
@@ -238,12 +238,12 @@ Return only the review text, no quotes or extra formatting.`;
           `${businessName} exceeded expectations. Professional approach and excellent customer service.`
         ],
         "Gujarati": [
-          `${businessName} માં સારો અનુભવ રહ્યો. વ્યાવસાયિક સેવા અને ગુણવત્તાયુક્ત કામ, માત્ર થોડી રાહ જોવી પડી.`,
-          `${businessName} માં ખૂબ સારી સેવા મળી. કર્મચારીઓ મદદગાર હતા અને કામ પણ સારું થયું.`
+          `${businessName} ma saaro anubhav rahyo. Vyavsayik seva ane gunvattayukt kaam, matra thodi raah jovvi padi`,
+          `${businessName} ma khub sari seva mali. Karmachariyo madadgar hata ane kaam pan saru thayo.`
         ],
         "Hindi": [
-          `${businessName} में अच्छा अनुभव रहा। प्रोफेशनल सर्विस और क्वालिटी वर्क, बस थोड़ा इंतजार करना पड़ा।`,
-          `${businessName} में बहुत अच्छी सेवा मिली। स्टाफ सहयोगी था और काम भी बेहतरीन हुआ।`
+          `${businessName} mein accha anubhav raha. Professional service aur quality work, bas thoda intezaar karna pada.`,
+          `${businessName} mein bahut acchi seva mili. Staff sahyogi tha aur kaam bhi behtareen hua.`
         ]
       },
       5: {
@@ -253,12 +253,12 @@ Return only the review text, no quotes or extra formatting.`;
           `Outstanding ${type}! ${businessName} provides top-notch ${category.toLowerCase()} service.${serviceText} Five stars!`
         ],
         "Gujarati": [
-          `${businessName} માં શાનદાર અનુભવ! વ્યાવસાયિક ${type} અને ઉત્તમ સેવા.${serviceText} ${category} માટે ભલામણ કરું છું.`,
-          `${businessName} અપેક્ષાઓથી વધુ સારું! ગુણવત્તાયુક્ત સેવા અને મિત્રતાપૂર્ણ સ્ટાફ.${serviceText} ફરીથી આવીશ.`
+          `${businessName} ma shaandaar anubhav! Vyavsayik ${type} ane uttam seva.${serviceText} ${category} mate bhalaman karu chhu.`,
+          `${businessName} apekshaao thi vadhu saaru! Gunvattayukt seva ane mitratapurn staff.${serviceText} farithi aavish.`
         ],
         "Hindi": [
-          `${businessName} में बेहतरीन अनुभव! प्रोफेशनल ${type} और उत्कृष्ट सेवा.${serviceText} ${category} के लिए सिफारिश करता हूं.`,
-          `${businessName} ने उम्मीदों से बढ़कर सेवा दी! गुणवत्तापूर्ण सेवा और दोस्ताना स्टाफ.${serviceText} फिर से आऊंगा.`
+          `${businessName} mein behtareen anubhav! Professional ${type} aur utkrist seva.${serviceText} ${category} ke liye sifarish karta hoon.`,
+          `${businessName} ne ummeedon se badhkar seva di! Gunvattaapoorn seva aur dostana staff.${serviceText} phir se aaunga.`
         ]
       }
     };
