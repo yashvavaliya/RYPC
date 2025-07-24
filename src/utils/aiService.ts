@@ -249,24 +249,6 @@ Generate ONLY the review text (no quotes or formatting):`;
     const randomIndex = Math.floor(Math.random() * languageFallbacks.length);
     let selectedFallback = languageFallbacks[randomIndex];
     
-    // Ensure fallback is within character limit
-    if (selectedFallback.length > 170) {
-      selectedFallback = selectedFallback.substring(0, 167) + '...';
-    } else if (selectedFallback.length < 155) {
-      // Pad with appropriate ending
-      const paddings = language === 'English' ? [' Great!', ' Good.', ' Nice.'] : 
-                     language === 'Hindi' ? [' बढ़िया!', ' अच्छा।', ' बेहतरीन।'] :
-                     [' સારું!', ' બેસ્ટ।', ' ખૂબ સારું।'];
-      while (selectedFallback.length < 155) {
-        const padding = paddings[Math.floor(Math.random() * paddings.length)];
-        if (selectedFallback.length + padding.length <= 170) {
-          selectedFallback += padding;
-        } else {
-          break;
-        }
-      }
-    }
-    
     return {
       text: selectedFallback,
       hash: this.generateHash(selectedFallback + timestamp),
