@@ -77,72 +77,72 @@ export class AIReviewService {
     let serviceInstructions = '';
     if (selectedServices && selectedServices.length > 0) {
       serviceInstructions = `
-Customer specifically wants to highlight these services: ${selectedServices.join(', ')}
-- Mention these services naturally in the review context
-- Don't list them generically, weave them into the experience narrative
-- Focus on how these specific aspects contributed to the ${starRating}-star experience
-- Use authentic language that reflects real customer experience with these services`;
+Naturally mention these aspects: ${selectedServices.join(', ')}`;
     }
 
     // Language-specific instructions
     let languageInstruction = "";
     switch (selectedLanguage) {
       case "English":
-        languageInstruction = "Write the review entirely in English.";
+        languageInstruction = "Write in natural English like a local customer would.";
         break;
       case "Gujarati":
-        languageInstruction = `Write the review entirely in Gujarati using English transliteration. 
-        IMPORTANT: Do NOT start the sentence with the business name "${businessName}". 
-        The business name can appear in the middle or end of sentences, but never at the beginning.
-        Example patterns: "Maru experience ${businessName} ma khub saaru rahyu" or "Khub saari seva mali ${businessName} thi"`;
+        languageInstruction = `Write in natural Gujarati (Devanagari script). Place business name naturally in middle or end of sentences, never at start.`;
         break;
       case "Hindi":
-        languageInstruction = `Write the review entirely in Hindi using English transliteration.
-        IMPORTANT: Do NOT start the sentence with the business name "${businessName}".
-        The business name can appear in the middle or end of sentences, but never at the beginning.
-        Example patterns: "Mera anubhav ${businessName} mein bahut accha raha" or "Bahut acchi seva mili ${businessName} se"`;
+        languageInstruction = `Write in natural Hindi (Devanagari script). Place business name naturally in middle or end of sentences, never at start.`;
         break;
     }
 
-    // Tone instructions
-    const toneInstructions = {
-      'Professional': 'Use formal, professional language appropriate for business contexts.',
-      'Friendly': 'Use warm, approachable language that feels personal and genuine.',
-      'Casual': 'Use relaxed, informal language that sounds conversational and natural.',
-      'Grateful': 'Use appreciative, thankful language that expresses genuine gratitude.'
-    };
-
-    // Use case instructions
-    const useCaseInstructions = {
-      'Customer review': 'Write from the perspective of a satisfied customer who used the service.',
-      'Student feedback': 'Write from the perspective of a student or learner who benefited from the education/training.',
-      'Patient experience': 'Write from the perspective of a patient who received medical care or treatment.'
+    // Get business-specific context
+    const getBusinessContext = (category: string, type: string) => {
+      const contexts = {
+        'Food & Beverage': 'food quality, taste, ambiance, service, seating, staff behavior',
+        'Health & Medical': 'doctor consultation, staff care, cleanliness, waiting time, treatment',
+        'Education': 'teaching quality, facilities, staff, environment, learning experience',
+        'Services': 'service quality, staff behavior, timeliness, value for money',
+        'Retail & Shopping': 'product variety, pricing, staff help, store ambiance',
+        'Hotels & Travel': 'room comfort, service, location, amenities, staff',
+        'Entertainment & Recreation': 'experience, facilities, crowd management, value',
+        'Professional Businesses': 'expertise, professionalism, service delivery, communication'
+      };
+      return contexts[category] || 'service quality, staff, experience, value';
     };
 
     for (let attempt = 0; attempt < maxRetries; attempt++) {
-      const prompt = `Generate a realistic Google review for "${businessName}" which is a ${type} in the ${category} category.
+      const businessContext = getBusinessContext(category, type);
+      
+      const prompt = `You are generating natural-sounding Google Map reviews in short form (total 155 to 170 characters only). The review must feel like it's written by a local customer.
 
-Star Rating: ${starRating}/5
-Sentiment: ${sentimentGuide[starRating as keyof typeof sentimentGuide]}
-Tone: ${selectedTone} - ${toneInstructions[selectedTone]}
-Use Case: ${selectedUseCase} - ${useCaseInstructions[selectedUseCase]}
-${highlights ? `Customer highlights: ${highlights}` : ''}
-- Each sentence should have different structure and approach
-- Vary the placement of business name within sentences
-- Use different emotional expressions and descriptive words
-${selectedServices && selectedServices.length > 0 ? `- Naturally incorporate these service experiences: ${selectedServices.join(', ')}` : ''}
+Business: "${businessName}" (${type} in ${category})
+Rating: ${starRating}/5 stars
+Language: ${selectedLanguage}
+${serviceInstructions}
+
+Rules:
+- Review must have a total character count between 155 and 170 only.
 - ${languageInstruction}
-- Use specific details that make the review believable
+- Randomly use 1, 2, or 3 sentences (never more).
+- Sound natural, avoid fake-sounding phrases or forced keywords.
+- Be realistic and regionally authentic (not robotic or generic).
+- Mention specific elements like: ${businessContext} based on the business type.
+- Avoid repetition or fixed structure.
+- Maintain proper punctuation, no hashtags or emojis.
+- Avoid overuse of superlatives like "amazing", "superb" unless it fits naturally.
+- Sentiment: ${sentimentGuide[starRating as keyof typeof sentimentGuide]}
 
-Return only the review text, no quotes or extra formatting.`;
+Generate ONLY the review text (no quotes or formatting):`;
 
       try {
         const result = await this.model.generateContent(prompt);
         const response = await result.response;
         const reviewText = response.text().trim();
 
-        // Check if review is unique
-        if (this.isReviewUnique(reviewText)) {
+        // Check character count and uniqueness
+        const charCount = reviewText.length;
+        console.log(`Generated review: ${charCount} characters - "${reviewText}"`);
+        
+        if (charCount >= 155 && charCount <= 170 && this.isReviewUnique(reviewText)) {
           this.markReviewAsUsed(reviewText);
           return {
             text: reviewText,
@@ -152,7 +152,7 @@ Return only the review text, no quotes or extra formatting.`;
           };
         }
 
-        console.log(`Attempt ${attempt + 1}: Generated duplicate review, retrying...`);
+        console.log(`Attempt ${attempt + 1}: Review ${charCount} chars or duplicate, retrying...`);
       } catch (error) {
         console.error(`AI Review Generation Error (attempt ${attempt + 1}):`, error);
       }
@@ -166,94 +166,75 @@ Return only the review text, no quotes or extra formatting.`;
     const { businessName, category, type, selectedServices, starRating, language, tone } = request;
     const timestamp = Date.now();
     
-    // Generate service-specific text
-    let serviceText = '';
-    if (selectedServices && selectedServices.length > 0) {
-      if (selectedServices.length === 1) {
-        serviceText = ` The ${selectedServices[0]} was particularly good.`;
-      } else if (selectedServices.length === 2) {
-        serviceText = ` The ${selectedServices[0]} and ${selectedServices[1]} were particularly good.`;
-      } else {
-        serviceText = ` The ${selectedServices.slice(0, 2).join(', ')} and other services were particularly good.`;
-      }
-    }
-      
     const fallbacks: Record<number, Record<string, string[]>> = {
       1: {
         "English": [
-          `Had a disappointing experience with the service quality. ${businessName} didn't meet our expectations and several issues weren't addressed properly.${serviceText}`,
-          `The service was below average during our recent visit. Multiple problems occurred at ${businessName} that left us unsatisfied.${serviceText}`,
-          `Quality of service was poor and staff seemed unprofessional. Not impressed with the overall experience at ${businessName}.${serviceText}`
+          `Service quality was poor at ${businessName}. Staff seemed unprofessional and several issues weren't addressed properly during our visit.`,
+          `Disappointing experience at ${businessName}. Below average service and multiple problems that left us unsatisfied with the overall quality.`
         ],
         "Gujarati": [
-          `Maru anubhav ${businessName} ma nirashajanak rahyo. Seva apeksha karta ochhi hati ane ghani samasyao ukelai nathi.`,
-          `Seva sari nathi hati ${businessName} ma. Amari apekshao poori thai nathi ane karmachariyo pan sahkaari nathi.`,
-          `Khub nirash thayo ${businessName} ni seva thi. Gunvatta ane vyavastha banne ma sudharani jarur chhe.`
+          `${businessName} માં સેવા સારી નથી. કર્મચારીઓ પણ સહકારી નથી અને ગુણવત્તામાં સુધારાની જરૂર છે.`,
+          `${businessName} થી નિરાશ થયો. અપેક્ષા કરતા ઓછી સેવા અને ઘણી સમસ્યાઓ ઉકેલાઈ નથી.`
         ],
         "Hindi": [
-          `Mera anubhav ${businessName} mein niraashajanak raha. Seva umeed se kam thi aur kai samasyaon ka samaadhan nahi hua.`,
-          `Seva achhi nahi thi ${businessName} mein. Hamari apekshaen poori nahi hui aur staff bhi sahayak nahi tha.`,
-          `Bahut nirash hua ${businessName} ki seva se. Gunvatta aur vyavastha dono mein sudhaar ki zarurat hai.`
+          `${businessName} में सेवा अच्छी नहीं थी। हमारी अपेक्षाएं पूरी नहीं हुईं और स्टाफ भी सहायक नहीं था।`,
+          `${businessName} की सेवा से निराश हुआ। गुणवत्ता और व्यवस्था दोनों में सुधार की जरूरत है।`
         ]
       },
       2: {
         "English": [
-          `The experience was okay but had some problems. Staff at ${businessName} tried to help but there's definitely room for improvement.`,
-          `Mixed feelings about our visit to ${businessName}. Some aspects were good but several issues need attention.`,
-          `Service has potential but ${businessName} needs to work on quality and customer satisfaction.`
+          `Experience was okay at ${businessName} but had some problems. Staff tried to help but there's room for improvement.`,
+          `Mixed feelings about ${businessName}. Some aspects were good but several issues need attention and better service quality.`
         ],
         "Gujarati": [
-          `Anubhav saaru hatu pan ${businessName} ma ketlik samasyao hati. Staff-e madad karvano prayas karyo pan sudharani jarur chhe.`,
-          `Mishr anubhav rahyo ${businessName} ma. Ketlik vastuo sari hati pan sudharani jarur chhe.`
+          `${businessName} માં અનુભવ સારો હતો પણ કેટલીક સમસ્યાઓ હતી। સ્ટાફે મદદ કરવાનો પ્રયાસ કર્યો પણ સુધારાની જરૂર છે.`,
+          `${businessName} માં મિશ્ર અનુભવ રહ્યો। કેટલીક વસ્તુઓ સારી હતી પણ સુધારાની જરૂર છે.`
         ],
         "Hindi": [
-          `Anubhav theek tha lekin ${businessName} mein kuch samasyaayein thin. Staff ne madad karne ki koshish ki lekin sudhaar ki zarurat hai.`,
-          `Mila-jula anubhav raha ${businessName} mein. Kuch cheezein acchi thin lekin sudhaar ki gunjaayish hai.`
+          `${businessName} में अनुभव ठीक था लेकिन कुछ समस्याएं थीं। स्टाफ ने मदद की कोशिश की लेकिन सुधार की जरूरत है।`,
+          `${businessName} में मिला-जुला अनुभव रहा। कुछ चीजें अच्छी थीं लेकिन सुधार की गुंजाइश है।`
         ]
       },
       3: {
         "English": [
-          `Average experience with decent service quality. Some things were good at ${businessName}, others could be better overall.`,
-          `Standard service that gets the job done. Nothing exceptional but ${businessName} meets basic requirements.`,
-          `Okay experience that met basic expectations. Nothing stood out particularly at ${businessName} but it was acceptable.`
+          `Average experience at ${businessName} with decent service. Some things were good, others could be better for overall satisfaction.`,
+          `Standard service at ${businessName} that gets the job done. Nothing exceptional but meets basic requirements and expectations.`
         ],
         "Gujarati": [
-          `Saamanya anubhav rahyo ${businessName} ma. Ketlik vastuon saari hati, ketlik sudhari shakay.`,
-          `Madhyam seva mali ${businessName} ma. Kai khaas nathi pan kaam chali jay evu.`
+          `${businessName} માં સામાન્ય અનુભવ રહ્યો। કેટલીક વસ્તુઓ સારી હતી, કેટલીક સુધારી શકાય છે.`,
+          `${businessName} માં મધ્યમ સેવા મળી। કાંઈ ખાસ નથી પણ કામ ચાલી જાય એવું છે.`
         ],
         "Hindi": [
-          `Ausat anubhav raha ${businessName} mein. Kuch cheezein acchi thin, kuch behtar ho sakti thin.`,
-          `Saamaanya seva mili ${businessName} mein. Kuch khaas nahin lekin kaam chal jaata hai.`
+          `${businessName} में औसत अनुभव रहा। कुछ चीजें अच्छी थीं, कुछ बेहतर हो सकती थीं।`,
+          `${businessName} में सामान्य सेवा मिली। कुछ खास नहीं लेकिन काम चल जाता है।`
         ]
       },
       4: {
         "English": [
-          `Good experience with professional service and quality work. Just a minor wait time at ${businessName} but overall excellent.`,
-          `Really satisfied with the great service quality and friendly staff. Highly recommend ${businessName} to others.`,
-          `Professional approach and excellent customer service exceeded expectations. Very happy with ${businessName}.`
+          `Good experience at ${businessName} with professional service. Quality work and friendly staff, just minor wait time but overall excellent.`,
+          `Really satisfied with ${businessName}. Great service quality and helpful staff exceeded our expectations. Highly recommend to others.`
         ],
         "Gujarati": [
-          `Saaro anubhav rahyo ${businessName} ma. Vyavsayik seva ane gunvattayukt kaam, matra thodi raah jovvi padi.`,
-          `Khub sari seva mali. Karmachariyo madadgar hata ane kaam pan saru thayo.`
+          `${businessName} માં સારો અનુભવ રહ્યો। વ્યવસાયિક સેવા અને ગુણવત્તાયુક્ત કામ, માત્ર થોડી રાહ જોવવી પડી.`,
+          `${businessName} માં ખૂબ સારી સેવા મળી। કર્મચારીઓ મદદગાર હતા અને કામ પણ સારું થયું.`
         ],
         "Hindi": [
-          `Accha anubhav raha ${businessName} mein. Professional service aur quality work, bas thoda intezaar karna pada.`,
-          `Bahut acchi seva mili ${businessName} mein. Staff sahyogi tha aur kaam bhi behtareen hua.`
+          `${businessName} में अच्छा अनुभव रहा। प्रोफेशनल सेवा और क्वालिटी वर्क, बस थोड़ा इंतजार करना पड़ा।`,
+          `${businessName} में बहुत अच्छी सेवा मिली। स्टाफ सहयोगी था और काम भी बेहतरीन हुआ।`
         ]
       },
       5: {
         "English": [
-          `Great experience with professional ${type} service! Excellent quality and friendly staff at ${businessName}.${serviceText} Highly recommend for ${category.toLowerCase()}.`,
-          `Quality ${type} service exceeded all expectations! Friendly staff and great experience at ${businessName}.${serviceText} Will definitely return.`,
-          `Outstanding service and top-notch ${category.toLowerCase()} experience! Really impressed with ${businessName}.${serviceText} Absolutely recommended!`
+          `Excellent experience at ${businessName}! Professional service, quality work and friendly staff. Highly recommend for ${category.toLowerCase()}.`,
+          `Outstanding service at ${businessName}. Top-notch quality and helpful staff exceeded all expectations. Will definitely return for sure.`
         ],
         "Gujarati": [
-          `Shaandaar anubhav rahyo ${businessName} ma! Vyavsayik ${type} ane uttam seva.${serviceText} ${category} mate bhalaman karu chhu.`,
-          `Apekshaao thi vadhu saaru ${businessName} ma! Gunvattayukt seva ane mitratapurn staff.${serviceText} Farithi aavish.`
+          `${businessName} માં શાનદાર અનુભવ રહ્યો! વ્યવસાયિક સેવા અને ઉત્તમ ગુણવત્તા. ખૂબ જ સારું કામ અને મિત્રતાપૂર્ણ સ્ટાફ.`,
+          `${businessName} માં અપેક્ષાઓ થી વધુ સારું! ગુણવત્તાયુક્ત સેવા અને મદદગાર સ્ટાફ. ફરીથી આવીશ.`
         ],
         "Hindi": [
-          `Behtareen anubhav raha ${businessName} mein! Professional ${type} aur utkrist seva.${serviceText} ${category} ke liye sifarish karta hoon.`,
-          `Ummeedon se badhkar seva mili ${businessName} mein! Gunvattaapoorn seva aur dostana staff.${serviceText} Phir se aaunga.`
+          `${businessName} में बेहतरीन अनुभव रहा! प्रोफेशनल सेवा और उत्कृष्ट गुणवत्ता। बहुत अच्छा काम और दोस्ताना स्टाफ।`,
+          `${businessName} में उम्मीदों से बढ़कर सेवा मिली! गुणवत्तापूर्ण सेवा और सहयोगी स्टाफ। फिर से आऊंगा।`
         ]
       }
     };
@@ -262,14 +243,29 @@ Return only the review text, no quotes or extra formatting.`;
     const ratingFallbacks = fallbacks[starRating] || fallbacks[5];
     const languageFallbacks = ratingFallbacks[language] || ratingFallbacks["English"];
     const randomIndex = Math.floor(Math.random() * languageFallbacks.length);
-    const selectedFallback = languageFallbacks[randomIndex];
+    let selectedFallback = languageFallbacks[randomIndex];
     
-    // Make it unique by adding timestamp-based variation
-    const uniqueFallback = `${selectedFallback} (${timestamp})`.replace(` (${timestamp})`, '');
+    // Ensure fallback is within character limit
+    if (selectedFallback.length > 170) {
+      selectedFallback = selectedFallback.substring(0, 167) + '...';
+    } else if (selectedFallback.length < 155) {
+      // Pad with appropriate ending
+      const paddings = language === 'English' ? [' Great!', ' Good.', ' Nice.'] : 
+                     language === 'Hindi' ? [' बढ़िया!', ' अच्छा।', ' बेहतरीन।'] :
+                     [' સારું!', ' બેસ્ટ।', ' ખૂબ સારું।'];
+      while (selectedFallback.length < 155) {
+        const padding = paddings[Math.floor(Math.random() * paddings.length)];
+        if (selectedFallback.length + padding.length <= 170) {
+          selectedFallback += padding;
+        } else {
+          break;
+        }
+      }
+    }
     
     return {
-      text: uniqueFallback,
-      hash: this.generateHash(uniqueFallback + timestamp),
+      text: selectedFallback,
+      hash: this.generateHash(selectedFallback + timestamp),
       language: language || 'English',
       rating: starRating
     };
