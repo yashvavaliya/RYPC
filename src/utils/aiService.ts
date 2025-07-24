@@ -232,13 +232,14 @@ Generate ONLY the review text (no quotes or formatting):`;
           `Outstanding service at ${businessName}. Top-notch quality and helpful staff exceeded all expectations. Will definitely return for sure.`
         ],
         "Gujarati": [
-          `${businessName} માં શાનદાર અનુભવ રહ્યો! વ્યવસાયિક સેવા અને ઉત્તમ ગુણવત્તા. ખૂબ જ સારું કામ અને મિત્રતાપૂર્ણ સ્ટાફ.`,
-          `${businessName} માં અપેક્ષાઓ થી વધુ સારું! ગુણવત્તાયુક્ત સેવા અને મદદગાર સ્ટાફ. ફરીથી આવીશ.`
-        ],
-        "Hindi": [
-          `${businessName} में बेहतरीन अनुभव रहा! प्रोफेशनल सेवा और उत्कृष्ट गुणवत्ता। बहुत अच्छा काम और दोस्ताना स्टाफ।`,
-          `${businessName} में उम्मीदों से बढ़कर सेवा मिली! गुणवत्तापूर्ण सेवा और सहयोगी स्टाफ। फिर से आऊंगा।`
-        ]
+  `${businessName} maṁ shāndār anubhav rahyo! Vyavsayik sevā ane uttam guṇvattā. Khūbaj sāruṁ kām ane mitratāpūrṇ staff.`,
+  `${businessName} māṁ apekṣāo thī vadhu sāruṁ! Guṇvattāyukt sevā ane madadgār staff. Farīthī āvīś.`
+],
+
+       "Hindi": [
+  `${businessName} mein behtareen anubhav raha! Professional seva aur utkṛṣṭ gunvatta. Bahut acchā kām aur dostāna staff.`,
+  `${businessName} mein ummīdon se baṛhkar seva milī! Gunvatta pūrṇ seva aur sahyogī staff. Phir se āūngā.`
+]
       }
     };
 
