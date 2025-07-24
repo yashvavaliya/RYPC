@@ -232,8 +232,8 @@ Generate ONLY the review text (no quotes or formatting):`;
           `Outstanding service at ${businessName}. Top-notch quality and helpful staff exceeded all expectations. Will definitely return for sure.`
         ],
         "Gujarati": [
-  `${businessName} maṁ shāndār anubhav rahyo! Vyavsayik sevā ane uttam guṇvattā. Khuba j saru kam ane mitratapurn staff.`,
-  `apeksao thi vadhu saru! Guṇvattāyukt Gunvattayukt seva ane madadgar staff. Farithi avis.`
+  `${businessName} ma shandar anubhav rahyo! Vyavsayik seva ane uttam gunvata. Khubaj saru kam ane mitratapurna staff.`,
+  `apeksao thi vadhu saru! Gunvattayukt seva ane madadgar staff. Farithi avis.`
 ],
 
        "Hindi": [
