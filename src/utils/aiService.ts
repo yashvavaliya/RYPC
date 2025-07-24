@@ -122,7 +122,6 @@ ${serviceInstructions}
 Rules:
 - Review must have a total character count between 155 and 170 only.
 - ${languageInstruction}
-- Randomly use 1, 2, or 3 sentences (never more).
 - Sound natural, avoid fake-sounding phrases or forced keywords.
 - Be realistic and regionally authentic (not robotic or generic).
 - Mention specific elements like: ${businessContext} based on the business type.
