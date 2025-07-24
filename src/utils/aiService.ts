@@ -232,13 +232,13 @@ Generate ONLY the review text (no quotes or formatting):`;
           `Outstanding service at ${businessName}. Top-notch quality and helpful staff exceeded all expectations. Will definitely return for sure.`
         ],
         "Gujarati": [
-  `${businessName} maṁ shāndār anubhav rahyo! Vyavsayik sevā ane uttam guṇvattā. Khūbaj sāruṁ kām ane mitratāpūrṇ staff.`,
-  `${businessName} māṁ apekṣāo thī vadhu sāruṁ! Guṇvattāyukt sevā ane madadgār staff. Farīthī āvīś.`
+  `${businessName} maṁ shāndār anubhav rahyo! Vyavsayik sevā ane uttam guṇvattā. Khuba j saru kam ane mitratapurn staff.`,
+  `apeksao thi vadhu saru! Guṇvattāyukt Gunvattayukt seva ane madadgar staff. Farithi avis.`
 ],
 
        "Hindi": [
-  `${businessName} mein behtareen anubhav raha! Professional seva aur utkṛṣṭ gunvatta. Bahut acchā kām aur dostāna staff.`,
-  `${businessName} mein ummīdon se baṛhkar seva milī! Gunvatta pūrṇ seva aur sahyogī staff. Phir se āūngā.`
+  `mera behtareen anubhav raha! Professional seva aur utkṛṣṭ gunvatta. Bahut accha kam aur dostana staff.`,
+  `meri ummidon se barhkar seva mili! Gunvatta purn seva aur sahyogi staff. Phir se aunga.`
 ]
       }
     };
@@ -249,7 +249,23 @@ Generate ONLY the review text (no quotes or formatting):`;
     const randomIndex = Math.floor(Math.random() * languageFallbacks.length);
     let selectedFallback = languageFallbacks[randomIndex];
     
-
+    // Ensure fallback is within character limit
+    if (selectedFallback.length > 170) {
+      selectedFallback = selectedFallback.substring(0, 167) + '...';
+    } else if (selectedFallback.length < 155) {
+      // Pad with appropriate ending
+      const paddings = language === 'English' ? [' Great!', ' Good.', ' Nice.'] : 
+                     language === 'Hindi' ? [' बढ़िया!', ' अच्छा।', ' बेहतरीन।'] :
+                     [' સારું!', ' બેસ્ટ।', ' ખૂબ સારું।'];
+      while (selectedFallback.length < 155) {
+        const padding = paddings[Math.floor(Math.random() * paddings.length)];
+        if (selectedFallback.length + padding.length <= 170) {
+          selectedFallback += padding;
+        } else {
+          break;
+        }
+      }
+    }
     
     return {
       text: selectedFallback,
