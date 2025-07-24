@@ -24,7 +24,7 @@ export const CompactReviewCardView: React.FC<CompactReviewCardViewProps> = ({ ca
   const languageOptions = [
     'English',
     'Gujarati', 
-    'Hindi'
+    
   ];
 
   const toneOptions = ['Friendly', 'Professional', 'Casual', 'Grateful'];
