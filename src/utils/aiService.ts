@@ -173,13 +173,15 @@ Generate ONLY the review text (no quotes or formatting):`;
           `Disappointing experience at ${businessName}. Below average service and multiple problems that left us unsatisfied with the overall quality.`
         ],
         "Gujarati": [
-          `${businessName} માં સેવા સારી નથી. કર્મચારીઓ પણ સહકારી નથી અને ગુણવત્તામાં સુધારાની જરૂર છે.`,
-          `${businessName} થી નિરાશ થયો. અપેક્ષા કરતા ઓછી સેવા અને ઘણી સમસ્યાઓ ઉકેલાઈ નથી.`
-        ],
-        "Hindi": [
-          `${businessName} में सेवा अच्छी नहीं थी। हमारी अपेक्षाएं पूरी नहीं हुईं और स्टाफ भी सहायक नहीं था।`,
-          `${businessName} की सेवा से निराश हुआ। गुणवत्ता और व्यवस्था दोनों में सुधार की जरूरत है।`
-        ]
+  `${businessName} ma seva saari nathi. Karmachariyo pan sahkaari nathi ane gunvatta ma sudharani jarur chhe.`,
+  `${businessName} thi niraash thayo. Apeksha karta ochhi seva ane ghani samasyao ukelai nathi.`
+]
+
+       "Hindi": [
+  `${businessName} mein seva acchi nahi thi. Hamari apekshaayein poori nahi hui aur staff bhi sahayak nahi tha.`,
+  `${businessName} ki seva se niraash hua. Gunwatta aur vyavastha dono mein sudhaar ki zarurat hai.`
+]
+
       },
       2: {
         "English": [
