@@ -237,7 +237,7 @@ Generate ONLY the review text (no quotes or formatting):`;
 ],
 
        "Hindi": [
-  `mera behtareen anubhav raha! Professional seva aur utkṛṣṭ gunvatta. Bahut accha kam aur dostana staff.`,
+  `Yahan professional seva mili aur quality bhi best thi. Staff ka vyavhaar bahut achha tha.`,
   `meri ummidon se barhkar seva mili! Gunvatta purn seva aur sahyogi staff. Phir se aunga.`
 ]
       }
