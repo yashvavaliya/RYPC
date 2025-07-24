@@ -87,10 +87,10 @@ Naturally mention these aspects: ${selectedServices.join(', ')}`;
         languageInstruction = "Write in natural English like a local customer would.";
         break;
       case "Gujarati":
-        languageInstruction = `Write in natural Gujarati (Devanagari script). Place business name naturally in middle or end of sentences, never at start.`;
+        languageInstruction = `Write the review entirely in Gujarati.use English transliteration. Place business name naturally in middle or end of sentences, never at start.`;
         break;
       case "Hindi":
-        languageInstruction = `Write in natural Hindi (Devanagari script). Place business name naturally in middle or end of sentences, never at start.`;
+        languageInstruction = `Write in natural Hindi. use English transliteration. Place business name naturally in middle or end of sentences, never at start.`;
         break;
     }
 
