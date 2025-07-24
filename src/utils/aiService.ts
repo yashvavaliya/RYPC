@@ -175,7 +175,7 @@ Generate ONLY the review text (no quotes or formatting):`;
         "Gujarati": [
   `${businessName} ma seva saari nathi. Karmachariyo pan sahkaari nathi ane gunvatta ma sudharani jarur chhe.`,
   `${businessName} thi niraash thayo. Apeksha karta ochhi seva ane ghani samasyao ukelai nathi.`
-]
+],
 
        "Hindi": [
   `${businessName} mein seva acchi nahi thi. Hamari apekshaayein poori nahi hui aur staff bhi sahayak nahi tha.`,
