@@ -152,13 +152,7 @@ export const LoginPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Footer */}
-        <div className="text-center mt-8">
-          <p className="text-slate-400 text-sm">
-            Secure access to Review Automation System
-          </p>
-        </div>
-      </div>
+      
     </div>
   );
 };
