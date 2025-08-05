@@ -1,7 +1,15 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { ApiConfiguration } from '../types';
+import { storage } from './storage';
 
-const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
-const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+// OpenAI API interface
+interface OpenAIResponse {
+  choices: Array<{
+    message: {
+      content: string;
+    };
+  }>;
+}
 
 export interface ReviewRequest {
   businessName: string;
@@ -26,7 +34,86 @@ export interface GeneratedReview {
 const usedReviewHashes = new Set<string>();
 
 export class AIReviewService {
-  private model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+  private geminiClients: Map<string, GoogleGenerativeAI> = new Map();
+
+  // Initialize AI client based on configuration
+  private async initializeClient(config: ApiConfiguration): Promise<any> {
+    if (config.provider === 'gemini') {
+      if (!this.geminiClients.has(config.apiKey)) {
+        this.geminiClients.set(config.apiKey, new GoogleGenerativeAI(config.apiKey));
+      }
+      return this.geminiClients.get(config.apiKey)!.getGenerativeModel({ model: config.model });
+    }
+    return null; // OpenAI will be handled differently
+  }
+
+  // Get active API configurations from database
+  private async getActiveApiConfigs(): Promise<ApiConfiguration[]> {
+    try {
+      const configs = await storage.getApiConfigurations();
+      return configs
+        .filter(config => config.isActive && config.apiKey.trim())
+        .sort((a, b) => a.priority - b.priority);
+    } catch (error) {
+      console.error('Failed to get API configurations:', error);
+      // Fallback to environment variable if database fails
+      const fallbackKey = import.meta.env.VITE_GEMINI_API_KEY;
+      if (fallbackKey) {
+        return [{
+          id: 'fallback',
+          name: 'Fallback Gemini',
+          provider: 'gemini',
+          apiKey: fallbackKey,
+          model: 'gemini-2.0-flash',
+          isActive: true,
+          priority: 1,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        }];
+      }
+      return [];
+    }
+  }
+
+  // Generate content using Gemini API
+  private async generateWithGemini(model: any, prompt: string): Promise<string> {
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    return response.text().trim();
+  }
+
+  // Generate content using OpenAI API
+  private async generateWithOpenAI(apiKey: string, model: string, prompt: string): Promise<string> {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: model,
+        messages: [
+          {
+            role: 'system',
+            content: 'You are an expert at writing authentic, natural-sounding Google Maps reviews for healthcare facilities.'
+          },
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        max_tokens: 150,
+        temperature: 0.9,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`OpenAI API error: ${response.status}`);
+    }
+
+    const data: OpenAIResponse = await response.json();
+    return data.choices[0]?.message?.content?.trim() || '';
+  }
 
   // Enhanced hash generation for better uniqueness detection
   private generateHash(content: string): string {
@@ -95,16 +182,22 @@ export class AIReviewService {
   async generateReview(request: ReviewRequest, maxRetries: number = 5): Promise<GeneratedReview> {
     const { businessName, category, type, highlights, selectedServices, starRating, language, tone, useCase } = request;
 
+    // Get active API configurations
+    const apiConfigs = await this.getActiveApiConfigs();
+    if (apiConfigs.length === 0) {
+      throw new Error('No active API configurations found. Please configure APIs in admin panel.');
+    }
+
     // Enhanced sentiment guide with more nuanced descriptions
     const sentimentGuide = {
-      1: "Disappointed and frustrated, mentioning specific problems that affected the experience negatively",
-      2: "Below expectations with some issues, but acknowledging effort while pointing out areas needing improvement",
-      3: "Balanced perspective with both positive and negative aspects, realistic and fair assessment",
-      4: "Satisfied and pleased with good service, minor suggestions for improvement, would recommend",
-      5: "Extremely happy and impressed, exceptional experience that exceeded expectations, enthusiastic recommendation"
+      1: "Disappointed with medical care, mentioning specific issues with treatment, staff, or facilities",
+      2: "Below expectations with some medical/service issues, but acknowledging staff effort",
+      3: "Balanced medical experience with both positive and areas for improvement",
+      4: "Satisfied with medical care, good doctors and staff, would recommend",
+      5: "Exceptional medical care, outstanding doctors and staff, highly recommend to others"
     };
 
-    // Enhanced language options
+    // Language options for medical reviews
     const languageOptions = [
       "English",
       "Gujarati",
@@ -115,134 +208,260 @@ export class AIReviewService {
     const selectedTone = tone || 'Friendly';
     const selectedUseCase = useCase || 'Customer review';
 
-    // Enhanced service-specific instructions
+    // Medical service-specific instructions
     let serviceInstructions = '';
     if (selectedServices && selectedServices.length > 0) {
       const shuffledServices = [...selectedServices].sort(() => Math.random() - 0.5);
       const selectedCount = Math.min(3, shuffledServices.length);
       const servicesToMention = shuffledServices.slice(0, selectedCount);
       serviceInstructions = `
-Focus on these specific aspects naturally: ${servicesToMention.join(', ')}. 
-Mention them in different ways - some as direct experience, others as observations.`;
+Focus on these medical aspects naturally: ${servicesToMention.join(', ')}. 
+Mention them as patient experience - treatment quality, staff care, facility cleanliness, etc.`;
     }
 
-    // Enhanced language-specific instructions
+    // Language-specific instructions for medical reviews
     let languageInstruction = "";
     switch (selectedLanguage) {
       case "English":
-        languageInstruction = "Write in natural, conversational English like a genuine local customer. Use varied sentence structures and authentic expressions.";
+        languageInstruction = "Write in natural, conversational English like a genuine patient. Use varied sentence structures and authentic medical experience expressions.";
         break;
       case "Gujarati":
-        languageInstruction = `Write entirely in Gujarati using English transliteration. Use natural Gujarati expressions and sentence patterns. Vary sentence structure - some short, some longer. Place business name naturally within sentences, never at the beginning.`;
+        languageInstruction = `Write entirely in Gujarati script (ગુજરાતી). Use natural Gujarati expressions for medical experiences. Vary sentence structure. Place hospital name naturally within sentences, never at the beginning.`;
         break;
       case "Hindi":
-        languageInstruction = `Write entirely in Hindi using English transliteration. Use authentic Hindi expressions and varied sentence structures. Mix formal and informal tone naturally. Place business name organically within sentences, avoid starting with it.`;
+        languageInstruction = `Write entirely in Hindi script (हिंदी). Use authentic Hindi expressions for medical experiences. Mix formal and informal tone naturally. Place hospital name organically within sentences, avoid starting with it.`;
         break;
     }
 
-    // Enhanced business-specific context with more detailed aspects
-    const getBusinessContext = (category: string, type: string, businessName: string) => {
-      const contexts = {
-        'Food & Beverage': 'food quality, taste, presentation, ambiance, service speed, staff friendliness, cleanliness, value for money, seating comfort',
-        'Health & Medical': 'doctor expertise, consultation quality, staff care, facility cleanliness, waiting time, treatment effectiveness, equipment quality, follow-up care, billing transparency',
-        'Education': 'teaching methodology, faculty knowledge, infrastructure, learning environment, student support, practical training, placement assistance',
-        'Services': 'service quality, staff professionalism, timeliness, problem resolution, value for money, customer support, follow-up service',
-        'Retail & Shopping': 'product variety, quality, pricing, staff assistance, store layout, billing process, return policy, customer service',
-        'Hotels & Travel': 'room comfort, cleanliness, service quality, location convenience, amenities, staff behavior, value for money',
-        'Entertainment & Recreation': 'experience quality, facilities, crowd management, safety, value for money, staff support, cleanliness',
-        'Professional Businesses': 'expertise level, professionalism, service delivery, communication, timeliness, problem-solving, client handling'
-      };
-      
-      // Special handling for Smit Hospital
-      if (businessName.toLowerCase().includes('smit') && businessName.toLowerCase().includes('hospital')) {
-        return 'gynecological care, maternity services, doctor expertise, staff compassion, facility cleanliness, consultation quality, delivery experience, prenatal care, medical equipment, patient comfort, treatment effectiveness';
+    // Medical context for SMIT Hospital
+    const getMedicalContext = (businessName: string) => {
+      if (businessName.toLowerCase().includes('smit')) {
+        return 'gynecological care, maternity services, delivery experience, prenatal care, doctor expertise, nursing staff, facility cleanliness, consultation quality, medical equipment, patient comfort, treatment effectiveness, billing transparency, emergency handling';
       }
-      
-      return contexts[category] || 'service quality, staff behavior, overall experience, value for money';
+      return 'doctor expertise, consultation quality, staff care, facility cleanliness, waiting time, treatment effectiveness, medical equipment, patient comfort, billing transparency';
     };
 
-    for (let attempt = 0; attempt < maxRetries; attempt++) {
-      const businessContext = getBusinessContext(category, type, businessName);
-      
-      // Generate random structural elements for variety
-      const reviewStructures = [
-        "experience_first", "recommendation_first", "specific_detail_first", 
-        "comparison_based", "story_telling", "direct_feedback"
-      ];
-      const selectedStructure = reviewStructures[Math.floor(Math.random() * reviewStructures.length)];
-      
-      // Generate random writing styles
-      const writingStyles = [
-        "conversational", "descriptive", "concise", "enthusiastic", 
-        "analytical", "personal", "professional"
-      ];
-      const selectedStyle = writingStyles[Math.floor(Math.random() * writingStyles.length)];
-      
-      const prompt = `You are generating authentic, natural-sounding Google Maps reviews that feel completely human-written. Each review must be unique in structure, vocabulary, and approach.
+    // Try each API configuration until one works
+    for (const apiConfig of apiConfigs) {
+      for (let attempt = 0; attempt < maxRetries; attempt++) {
+        const medicalContext = getMedicalContext(businessName);
+        
+        // Generate random structural elements for variety
+        const reviewStructures = [
+          "patient_experience_first", "doctor_recommendation", "treatment_outcome", 
+          "facility_quality", "staff_appreciation", "medical_care_quality"
+        ];
+        const selectedStructure = reviewStructures[Math.floor(Math.random() * reviewStructures.length)];
+        
+        const prompt = `You are generating authentic, natural-sounding Google Maps reviews for healthcare facilities. Each review must be unique and feel completely human-written by a real patient.
 
-BUSINESS DETAILS:
+HOSPITAL DETAILS:
 Name: "${businessName}" 
-Type: ${type} in ${category}
-Context: ${businessContext}
+Type: ${type} (Healthcare Facility)
+Medical Context: ${medicalContext}
 Rating: ${starRating}/5 stars
 Language: ${selectedLanguage}
-Writing Style: ${selectedStyle}
 Review Structure: ${selectedStructure}
 ${serviceInstructions}
 
 CRITICAL REQUIREMENTS:
-- EXACT character count: 150-200 characters (including spaces and punctuation)
+- EXACT character count: 155-170 characters (including spaces and punctuation)
 - ${languageInstruction}
-- Write like a real person sharing their genuine experience
-- Use varied sentence structures (mix short and long sentences)
-- Include specific, believable details that show personal experience
-- Avoid generic phrases, templates, or AI-like patterns
+- Write like a real patient sharing genuine medical experience
+- Use 1-3 sentences maximum
+- Include specific, believable medical details
+- Avoid generic phrases or AI-like patterns
 - Use natural, conversational language with regional authenticity
-- Vary vocabulary - don't repeat words or phrases from previous reviews
-- Include realistic imperfections in language (like real people write)
-- Mention specific aspects: ${businessContext}
+- Mention medical aspects: ${medicalContext}
 - NO hashtags, NO emojis, NO excessive punctuation
-- Make each review structurally different from others
 - Sentiment: ${sentimentGuide[starRating as keyof typeof sentimentGuide]}
 
 UNIQUENESS REQUIREMENTS:
 - Never use the same opening or closing phrases
-- Vary sentence patterns and word choices completely
+- Vary sentence patterns completely
 - Create different narrative approaches each time
-- Use different ways to express similar sentiments
-- Avoid repetitive structures or templates
+- Use different ways to express medical experiences
 
 Generate ONLY the review text (no quotes, formatting, or explanations):`;
 
-      try {
-        const result = await this.model.generateContent(prompt);
-        const response = await result.response;
-        const reviewText = response.text().trim();
+        try {
+          let reviewText = '';
+          
+          if (apiConfig.provider === 'gemini') {
+            const model = await this.initializeClient(apiConfig);
+            reviewText = await this.generateWithGemini(model, prompt);
+          } else if (apiConfig.provider === 'openai') {
+            reviewText = await this.generateWithOpenAI(apiConfig.apiKey, apiConfig.model, prompt);
+          }
 
-        // Enhanced validation
-        const charCount = reviewText.length;
-        console.log(`Attempt ${attempt + 1}: Generated review (${charCount} chars): "${reviewText}"`);
-        
-        // Validate character count and uniqueness
-        if (charCount >= 150 && charCount <= 200 && this.isReviewUnique(reviewText)) {
-          this.markReviewAsUsed(reviewText);
-          console.log(`✅ Review accepted: ${charCount} characters, unique content`);
-          return {
-            text: reviewText,
-            hash: this.generateHash(reviewText),
-            language: selectedLanguage,
-            rating: starRating
-          };
+          // Enhanced validation
+          const charCount = reviewText.length;
+          console.log(`${apiConfig.name} - Attempt ${attempt + 1}: Generated review (${charCount} chars): "${reviewText}"`);
+          
+          // Validate character count and uniqueness
+          if (charCount >= 155 && charCount <= 170 && this.isReviewUnique(reviewText)) {
+            this.markReviewAsUsed(reviewText);
+            console.log(`✅ Review accepted from ${apiConfig.name}: ${charCount} characters, unique content`);
+            return {
+              text: reviewText,
+              hash: this.generateHash(reviewText),
+              language: selectedLanguage,
+              rating: starRating
+            };
+          }
+
+          console.log(`❌ Review rejected from ${apiConfig.name}: ${charCount < 155 || charCount > 170 ? 'Invalid length' : 'Not unique'}, retrying...`);
+        } catch (error) {
+          console.error(`${apiConfig.name} Error (attempt ${attempt + 1}):`, error);
+          // Continue to next attempt or next API
         }
-
-        console.log(`❌ Review rejected: ${charCount < 150 || charCount > 200 ? 'Invalid length' : 'Not unique'}, retrying...`);
-      } catch (error) {
-        console.error(`AI Review Generation Error (attempt ${attempt + 1}):`, error);
       }
     }
 
-    // Fallback to unique hardcoded review if all attempts fail
-    return this.getFallbackReview(request);
+    // Fallback to medical-specific review if all APIs fail
+    return this.getMedicalFallbackReview(request);
+  }
+
+  private getMedicalFallbackReview(request: ReviewRequest): GeneratedReview {
+    const { businessName, starRating, language } = request;
+    const timestamp = Date.now();
+    
+    // Medical-specific fallback reviews
+    const medicalFallbacks: Record<number, Record<string, string[]>> = {
+      1: {
+        "English": [
+          `Had issues with medical care at ${businessName}. Long waiting time and staff wasn't very helpful. Expected better treatment quality.`,
+          `Not satisfied with consultation. ${businessName} needs improvement in patient care and service quality. Disappointing experience.`
+        ],
+        "Hindi": [
+          `${businessName} में इलाज से संतुष्ट नहीं हूं। डॉक्टर से मिलने में बहुत देर लगी और स्टाफ भी सहायक नहीं था।`,
+          `चिकित्सा सेवा में सुधार की जरूरत है। ${businessName} में अनुभव निराशाजनक रहा। बेहतर उम्मीद थी।`
+        ],
+        "Gujarati": [
+          `${businessName} માં તબીબી સેવામાં સમસ્યા હતી। ડૉક્ટરને મળવામાં ઘણો સમય લાગ્યો અને સ્ટાફ પણ મદદરૂપ નહોતો.`,
+          `સારવારની ગુણવત્તામાં સુધારાની જરૂર છે. ${businessName} માં અનુભવ નિરાશાજનક રહ્યો હતો.`
+        ]
+      },
+      2: {
+        "English": [
+          `Average medical experience at ${businessName}. Some good aspects but room for improvement in patient care and facility management.`,
+          `Mixed experience with treatment. ${businessName} has potential but needs better organization and patient handling.`
+        ],
+        "Hindi": [
+          `${businessName} में औसत चिकित्सा अनुभव रहा। कुछ अच्छे पहलू थे लेकिन मरीज़ों की देखभाल में सुधार की जरूरत है।`,
+          `इलाज का मिश्रित अनुभव रहा। ${businessName} में संभावना है लेकिन बेहतर व्यवस्था की जरूरत है।`
+        ],
+        "Gujarati": [
+          `${businessName} માં સરેરાશ તબીબી અનુભવ રહ્યો. કેટલાક સારા પાસાં હતા પણ દર્દીઓની સંભાળમાં સુધારાની જરૂર છે.`,
+          `સારવારનો મિશ્ર અનુભવ રહ્યો. ${businessName} માં સંભાવના છે પણ વધુ સારી વ્યવસ્થાની જરૂર છે.`
+        ]
+      },
+      3: {
+        "English": [
+          `Good medical care at ${businessName}. Doctors were knowledgeable and staff was helpful. Overall satisfied with treatment quality.`,
+          `Decent healthcare experience. ${businessName} provided good consultation and proper treatment. Would recommend for medical needs.`
+        ],
+        "Hindi": [
+          `${businessName} में अच्छी चिकित्सा सेवा मिली। डॉक्टर जानकार थे और स्टाफ सहायक था। इलाज की गुणवत्ता से संतुष्ट हूं।`,
+          `अच्छा स्वास्थ्य सेवा अनुभव रहा। ${businessName} में उचित परामर्श और इलाज मिला। सिफारिश करूंगा।`
+        ],
+        "Gujarati": [
+          `${businessName} માં સારી તબીબી સેવા મળી. ડૉક્ટરો જાણકાર હતા અને સ્ટાફ મદદરૂપ હતો. સારવારની ગુણવત્તાથી સંતુષ્ટ છું.`,
+          `સારો આરોગ્ય સેવા અનુભવ રહ્યો. ${businessName} માં યોગ્ય સલાહ અને સારવાર મળી. ભલામણ કરીશ.`
+        ]
+      },
+      4: {
+        "English": [
+          `Excellent medical care at ${businessName}! Professional doctors and caring staff. Very satisfied with treatment and would highly recommend.`,
+          `Great healthcare experience. ${businessName} provided top-quality medical service with expert doctors. Highly recommend to others.`
+        ],
+        "Hindi": [
+          `${businessName} में उत्कृष्ट चिकित्सा सेवा! पेशेवर डॉक्टर और देखभाल करने वाला स्टाफ। इलाज से बहुत संतुष्ट हूं।`,
+          `शानदार स्वास्थ्य सेवा अनुभव रहा। ${businessName} में विशेषज्ञ डॉक्टरों के साथ उच्च गुणवत्ता की सेवा मिली।`
+        ],
+        "Gujarati": [
+          `${businessName} માં ઉત્કૃષ્ટ તબીબી સેવા! વ્યાવસાયિક ડૉક્ટરો અને સંભાળ રાખનારો સ્ટાફ. સારવારથી ખૂબ સંતુષ્ટ છું.`,
+          `શાનદાર આરોગ્ય સેવા અનુભવ રહ્યો. ${businessName} માં નિષ્ણાત ડૉક્ટરો સાથે ઉચ્ચ ગુણવત્તાની સેવા મળી.`
+        ]
+      },
+      5: {
+        "English": [
+          `Outstanding medical care at ${businessName}! Exceptional doctors, excellent staff, and top-quality treatment. Highly recommend to everyone!`,
+          `Absolutely excellent healthcare! ${businessName} provided world-class medical service with caring doctors. Perfect experience, 5 stars!`
+        ],
+        "Hindi": [
+          `${businessName} में अद्भुत चिकित्सा सेवा! असाधारण डॉक्टर, उत्कृष्ट स्टाफ और उच्च गुणवत्ता का इलाज। सभी को सिफारिश!`,
+          `बिल्कुल उत्कृष्ट स्वास्थ्य सेवा! ${businessName} में देखभाल करने वाले डॉक्टरों के साथ विश्व स्तरीय सेवा मिली।`
+        ],
+        "Gujarati": [
+          `${businessName} માં અદ્ભુત તબીબી સેવા! અસાધારણ ડૉક્ટરો, ઉત્કૃષ્ટ સ્ટાફ અને ઉચ્ચ ગુણવત્તાની સારવાર. બધાને ભલામણ!`,
+          `બિલકુલ ઉત્કૃષ્ટ આરોગ્ય સેવા! ${businessName} માં સંભાળ રાખનારા ડૉક્ટરો સાથે વિશ્વ સ્તરીય સેવા મળી.`
+        ]
+      }
+    };
+
+    // Select appropriate fallback
+    const ratingFallbacks = medicalFallbacks[starRating] || medicalFallbacks[5];
+    const languageFallbacks = ratingFallbacks[language] || ratingFallbacks["English"];
+    const randomIndex = Math.floor(Math.random() * languageFallbacks.length);
+    let selectedFallback = languageFallbacks[randomIndex];
+    
+    // Ensure character limit (155-170)
+    if (selectedFallback.length < 155) {
+      selectedFallback += " Great care!";
+    }
+    if (selectedFallback.length > 170) {
+      selectedFallback = selectedFallback.substring(0, 167) + "...";
+    }
+    
+    return {
+      text: selectedFallback,
+      hash: this.generateHash(selectedFallback + timestamp),
+      language: language || 'English',
+      rating: starRating
+    };
+  }
+
+  // Generate tagline for medical business
+  async generateTagline(businessName: string, category: string, type: string): Promise<string> {
+    const apiConfigs = await this.getActiveApiConfigs();
+    
+    const prompt = `Generate a professional, caring tagline for "${businessName}" which is a ${type} in healthcare.
+
+Requirements:
+- Keep it under 8 words
+- Focus on medical care, trust, and expertise
+- Make it warm and professional
+- Reflect healthcare values
+- Avoid clichés
+
+Return only the tagline, no quotes or extra text.`;
+
+    // Try each API configuration
+    for (const apiConfig of apiConfigs) {
+      try {
+        if (apiConfig.provider === 'gemini') {
+          const model = await this.initializeClient(apiConfig);
+          return await this.generateWithGemini(model, prompt);
+        } else if (apiConfig.provider === 'openai') {
+          return await this.generateWithOpenAI(apiConfig.apiKey, apiConfig.model, prompt);
+        }
+      } catch (error) {
+        console.error(`Tagline generation error with ${apiConfig.name}:`, error);
+        continue;
+      }
+    }
+
+    // Fallback medical taglines
+    const medicalTaglines = [
+      'Your Health, Our Priority',
+      'Caring for Your Wellness',
+      'Expert Medical Care Always',
+      'Compassionate Healthcare Excellence',
+      'Trusted Medical Expertise'
+    ];
+      
+    return medicalTaglines[Math.floor(Math.random() * medicalTaglines.length)];
   }
 
   private getFallbackReview(request: ReviewRequest): GeneratedReview {

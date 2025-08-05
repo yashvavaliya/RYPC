@@ -192,14 +192,7 @@ export const EditCardModal: React.FC<EditCardModalProps> = ({ card, onClose, onS
   const toneOptions = ['Friendly', 'Professional', 'Casual', 'Grateful'];
 
   const categoryOptions = [
-    'Retail & Shopping',
-    'Food & Beverage',
-    'Services',
-    'Professional Businesses',
     'Health & Medical',
-    'Education',
-    'Hotels & Travel',
-    'Entertainment & Recreation'
   ];
 
   return (

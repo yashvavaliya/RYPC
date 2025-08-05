@@ -13,6 +13,18 @@ export interface ReviewCard {
   updatedAt: string;
 }
 
+export interface ApiConfiguration {
+  id: string;
+  name: string;
+  provider: 'gemini' | 'openai';
+  apiKey: string;
+  model: string;
+  isActive: boolean;
+  priority: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface ReviewTemplates {
   openings: string[];
   qualities: string[];

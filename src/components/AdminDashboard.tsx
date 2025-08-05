@@ -1,24 +1,30 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2, Eye, Search, Building2, Calendar, LogOut, Database, Loader2, Wifi, WifiOff, RefreshCw, ExternalLink } from 'lucide-react';
-import { ReviewCard } from '../types';
+import { Plus, Edit, Trash2, Eye, Search, Building2, Calendar, LogOut, Database, Loader2, Wifi, WifiOff, RefreshCw, ExternalLink, Settings, Key } from 'lucide-react';
+import { ReviewCard, ApiConfiguration } from '../types';
 import { storage } from '../utils/storage';
 import { formatDate } from '../utils/helpers';
 import { CompactAddCardModal } from './CompactAddCardModal';
 import { EditCardModal } from './EditCardModal';
 import { ConfirmDialog } from './ConfirmDialog';
+import { ApiConfigurationModal } from './ApiConfigurationModal';
 import { auth } from '../utils/auth';
 import { isSupabaseConfigured } from '../utils/supabase';
 
 export const AdminDashboard: React.FC = () => {
   const [cards, setCards] = useState<ReviewCard[]>([]);
+  const [apiConfigs, setApiConfigs] = useState<ApiConfiguration[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showApiModal, setShowApiModal] = useState(false);
   const [editingCard, setEditingCard] = useState<ReviewCard | null>(null);
+  const [editingApiConfig, setEditingApiConfig] = useState<ApiConfiguration | null>(null);
   const [deletingCard, setDeletingCard] = useState<ReviewCard | null>(null);
+  const [deletingApiConfig, setDeletingApiConfig] = useState<ApiConfiguration | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isMigrating, setIsMigrating] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState<'connected' | 'local' | 'checking'>('checking');
+  const [activeTab, setActiveTab] = useState<'cards' | 'apis'>('cards');
 
   useEffect(() => {
     initializeDashboard();
@@ -36,6 +42,7 @@ export const AdminDashboard: React.FC = () => {
     }
     
     await loadCards();
+    await loadApiConfigurations();
     setIsLoading(false);
   };
 
@@ -47,6 +54,17 @@ export const AdminDashboard: React.FC = () => {
     } catch (error) {
       console.error('Error loading cards:', error);
       setCards([]);
+    }
+  };
+
+  const loadApiConfigurations = async () => {
+    try {
+      const configs = await storage.getApiConfigurations();
+      setApiConfigs(configs);
+      console.log(`Loaded ${configs.length} API configurations`);
+    } catch (error) {
+      console.error('Error loading API configurations:', error);
+      setApiConfigs([]);
     }
   };
 
@@ -123,6 +141,56 @@ export const AdminDashboard: React.FC = () => {
     }
   };
 
+  const handleAddApiConfig = async (newConfig: ApiConfiguration) => {
+    try {
+      const success = await storage.addApiConfiguration(newConfig);
+      if (success) {
+        await loadApiConfigurations();
+        setShowApiModal(false);
+        console.log('API configuration added successfully:', newConfig.name);
+      } else {
+        alert('Failed to add API configuration. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error adding API configuration:', error);
+      alert('Failed to add API configuration. Please try again.');
+    }
+  };
+
+  const handleEditApiConfig = async (updatedConfig: ApiConfiguration) => {
+    try {
+      const success = await storage.updateApiConfiguration(updatedConfig);
+      if (success) {
+        await loadApiConfigurations();
+        setEditingApiConfig(null);
+        console.log('API configuration updated successfully:', updatedConfig.name);
+      } else {
+        alert('Failed to update API configuration. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error updating API configuration:', error);
+      alert('Failed to update API configuration. Please try again.');
+    }
+  };
+
+  const handleDeleteApiConfig = async () => {
+    if (deletingApiConfig) {
+      try {
+        const success = await storage.deleteApiConfiguration(deletingApiConfig.id);
+        if (success) {
+          await loadApiConfigurations();
+          setDeletingApiConfig(null);
+          console.log('API configuration deleted successfully:', deletingApiConfig.name);
+        } else {
+          alert('Failed to delete API configuration. Please try again.');
+        }
+      } catch (error) {
+        console.error('Error deleting API configuration:', error);
+        alert('Failed to delete API configuration. Please try again.');
+      }
+    }
+  };
+
   const handleRefresh = async () => {
     setIsRefreshing(true);
     try {
@@ -130,6 +198,7 @@ export const AdminDashboard: React.FC = () => {
         await storage.syncData();
       }
       await loadCards();
+      await loadApiConfigurations();
       console.log('Data refreshed successfully');
     } catch (error) {
       console.error('Error refreshing data:', error);
@@ -244,21 +313,39 @@ export const AdminDashboard: React.FC = () => {
           
           
           <h1 className="text-4xl lg:text-5xl font-bold text-white mb-4 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-  {/* <div className=" flex items-center justify-center mb-8">            
-                      <img
-                        src="/yashv.jpg"
-                        alt="YP Logo"
-                        className="w-20 h-20 sm:w-12 sm:h-12 lg:w-20 lg:h-20 object-contain rounded-xl  border border-white"
-                      />
-                  </div>      */}
-            Review Cards Dashboard
+            SMIT Hospital - Review System
           </h1>
           <p className="text-slate-300">
-            {connectionStatus === 'connected' 
-              ? 'Your review cards are synced across all devices' 
-              : 'Managing review cards locally'
-            }
+            AI-Powered Medical Review Generation System
           </p>
+        </div>
+
+        {/* Tab Navigation */}
+        <div className="flex justify-center mb-8">
+          <div className="bg-white/10 backdrop-blur-md rounded-xl p-1 border border-white/20">
+            <button
+              onClick={() => setActiveTab('cards')}
+              className={`px-6 py-3 rounded-lg font-medium transition-all duration-300 ${
+                activeTab === 'cards'
+                  ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg'
+                  : 'text-slate-300 hover:text-white hover:bg-white/10'
+              }`}
+            >
+              <Building2 className="w-4 h-4 mr-2 inline" />
+              Review Cards
+            </button>
+            <button
+              onClick={() => setActiveTab('apis')}
+              className={`px-6 py-3 rounded-lg font-medium transition-all duration-300 ${
+                activeTab === 'apis'
+                  ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg'
+                  : 'text-slate-300 hover:text-white hover:bg-white/10'
+              }`}
+            >
+              <Settings className="w-4 h-4 mr-2 inline" />
+              API Management
+            </button>
+          </div>
         </div>
 
         {/* Controls */}
@@ -267,61 +354,63 @@ export const AdminDashboard: React.FC = () => {
             <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
             <input
               type="text"
-              placeholder="Search cards by business name or slug..."
+              placeholder={activeTab === 'cards' ? "Search cards by business name..." : "Search API configurations..."}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-12 pr-4 py-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
             />
           </div>
           <button
-            onClick={() => setShowAddModal(true)}
+            onClick={() => activeTab === 'cards' ? setShowAddModal(true) : setShowApiModal(true)}
             className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
           >
             <Plus className="w-5 h-5 mr-2" />
-            Add New Card
+            {activeTab === 'cards' ? 'Add New Card' : 'Add API Config'}
           </button>
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-slate-400 text-sm font-medium">Total Cards</p>
-                <p className="text-3xl font-bold text-white">{cards.length}</p>
+        {activeTab === 'cards' && (
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+            <div className="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-slate-400 text-sm font-medium">Total Cards</p>
+                  <p className="text-3xl font-bold text-white">{cards.length}</p>
+                </div>
+                <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                  <Building2 className="w-6 h-6 text-blue-400" />
+                </div>
               </div>
-              <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center">
-                <Building2 className="w-6 h-6 text-blue-400" />
+            </div>
+            <div className="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-slate-400 text-sm font-medium">Active APIs</p>
+                  <p className="text-3xl font-bold text-white">{apiConfigs.filter(c => c.isActive).length}</p>
+                </div>
+                <div className="w-12 h-12 bg-green-500/20 rounded-lg flex items-center justify-center">
+                  <Key className="w-6 h-6 text-green-400" />
+                </div>
+              </div>
+            </div>
+            <div className="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-slate-400 text-sm font-medium">This Month</p>
+                  <p className="text-3xl font-bold text-white">{cards.filter(card => {
+                    const cardDate = new Date(card.createdAt);
+                    const now = new Date();
+                    return cardDate.getMonth() === now.getMonth() && cardDate.getFullYear() === now.getFullYear();
+                  }).length}</p>
+                </div>
+                <div className="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center">
+                  <Calendar className="w-6 h-6 text-purple-400" />
+                </div>
               </div>
             </div>
           </div>
-          <div className="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-slate-400 text-sm font-medium">Active Today</p>
-                <p className="text-3xl font-bold text-white">{cards.length}</p>
-              </div>
-              <div className="w-12 h-12 bg-green-500/20 rounded-lg flex items-center justify-center">
-                <Eye className="w-6 h-6 text-green-400" />
-              </div>
-            </div>
-          </div>
-          <div className="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-slate-400 text-sm font-medium">This Month</p>
-                <p className="text-3xl font-bold text-white">{cards.filter(card => {
-                  const cardDate = new Date(card.createdAt);
-                  const now = new Date();
-                  return cardDate.getMonth() === now.getMonth() && cardDate.getFullYear() === now.getFullYear();
-                }).length}</p>
-              </div>
-              <div className="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center">
-                <Calendar className="w-6 h-6 text-purple-400" />
-              </div>
-            </div>
-          </div>
-        </div>
+        )}
 
         {/* Loading State */}
         {isLoading ? (
@@ -337,18 +426,18 @@ export const AdminDashboard: React.FC = () => {
               }
             </p>
           </div>
-        ) : filteredCards.length === 0 ? (
+        ) : activeTab === 'cards' && filteredCards.length === 0 ? (
           <div className="text-center py-16">
             <div className="w-24 h-24 bg-slate-700/50 rounded-full flex items-center justify-center mx-auto mb-6">
               <Building2 className="w-12 h-12 text-slate-400" />
             </div>
             <h3 className="text-2xl font-semibold text-white mb-2">
-              {searchTerm ? 'No cards found' : 'No review cards yet'}
+              {searchTerm ? 'No cards found' : 'No medical review cards yet'}
             </h3>
             <p className="text-slate-400 mb-8 max-w-md mx-auto">
               {searchTerm 
                 ? 'Try adjusting your search terms or create a new card.'
-                : 'Get started by creating your first review card for your business.'
+                : 'Get started by creating your first review card for SMIT Hospital.'
               }
             </p>
             {!searchTerm && (
@@ -361,13 +450,13 @@ export const AdminDashboard: React.FC = () => {
               </button>
             )}
           </div>
-        ) : (
+        ) : activeTab === 'cards' ? (
           <div className="space-y-8">
             {/* Review Cards Grid */}
             <div>
               <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
                 <Building2 className="w-6 h-6 mr-3" />
-                Review Cards ({filteredCards.length})
+                Medical Review Cards ({filteredCards.length})
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredCards.map((card) => (
@@ -432,6 +521,94 @@ export const AdminDashboard: React.FC = () => {
               </div>
             </div>
           </div>
+        ) : (
+          /* API Configurations */
+          <div className="space-y-8">
+            <div>
+              <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
+                <Settings className="w-6 h-6 mr-3" />
+                API Configurations ({apiConfigs.length})
+              </h2>
+              
+              {apiConfigs.length === 0 ? (
+                <div className="text-center py-16">
+                  <div className="w-24 h-24 bg-slate-700/50 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <Key className="w-12 h-12 text-slate-400" />
+                  </div>
+                  <h3 className="text-2xl font-semibold text-white mb-2">No API configurations yet</h3>
+                  <p className="text-slate-400 mb-8 max-w-md mx-auto">
+                    Add your first API configuration to start generating AI reviews.
+                  </p>
+                  <button
+                    onClick={() => setShowApiModal(true)}
+                    className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+                  >
+                    <Plus className="w-5 h-5 mr-2" />
+                    Add First API Config
+                  </button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {apiConfigs
+                    .filter(config => 
+                      config.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                      config.provider.toLowerCase().includes(searchTerm.toLowerCase())
+                    )
+                    .map((config) => (
+                    <div
+                      key={config.id}
+                      className="bg-white/10 backdrop-blur-md rounded-xl border border-white/20 overflow-hidden hover:bg-white/15 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl"
+                    >
+                      <div className="p-6">
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="flex items-center">
+                            <div className={`w-3 h-3 rounded-full mr-3 ${config.isActive ? 'bg-green-400' : 'bg-gray-400'}`}></div>
+                            <div>
+                              <h3 className="text-lg font-semibold text-white">{config.name}</h3>
+                              <p className="text-sm text-slate-400 capitalize">{config.provider} • {config.model}</p>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <span className="text-xs text-slate-400">Priority</span>
+                            <p className="text-lg font-bold text-white">{config.priority}</p>
+                          </div>
+                        </div>
+
+                        <div className="mb-4">
+                          <p className="text-xs text-slate-400 mb-1">
+                            Status: <span className={`text-sm ${config.isActive ? 'text-green-400' : 'text-gray-400'}`}>
+                              {config.isActive ? 'Active' : 'Inactive'}
+                            </span>
+                          </p>
+                          <p className="text-xs text-slate-400">
+                            API Key: <span className="text-sm text-slate-300 font-mono">
+                              {config.apiKey.substring(0, 8)}...
+                            </span>
+                          </p>
+                        </div>
+
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => setEditingApiConfig(config)}
+                            className="flex-1 inline-flex items-center justify-center px-3 py-2 bg-purple-600/20 text-purple-400 rounded-lg hover:bg-purple-600/30 transition-colors duration-200"
+                          >
+                            <Edit className="w-4 h-4 mr-1" />
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => setDeletingApiConfig(config)}
+                            className="inline-flex items-center justify-center px-3 py-2 bg-red-600/20 text-red-400 rounded-lg hover:bg-red-600/30 transition-colors duration-200"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
         )}
 
         {/* Modals */}
@@ -439,6 +616,13 @@ export const AdminDashboard: React.FC = () => {
           <CompactAddCardModal
             onClose={() => setShowAddModal(false)}
             onSave={handleAddCard}
+          />
+        )}
+
+        {showApiModal && (
+          <ApiConfigurationModal
+            onClose={() => setShowApiModal(false)}
+            onSave={handleAddApiConfig}
           />
         )}
 
@@ -450,12 +634,29 @@ export const AdminDashboard: React.FC = () => {
           />
         )}
 
+        {editingApiConfig && (
+          <ApiConfigurationModal
+            config={editingApiConfig}
+            onClose={() => setEditingApiConfig(null)}
+            onSave={handleEditApiConfig}
+          />
+        )}
+
         {deletingCard && (
           <ConfirmDialog
             title="Delete Review Card"
             message={`Are you sure you want to delete the review card for "${deletingCard.businessName}"? This action cannot be undone.`}
             onConfirm={handleDeleteCard}
             onCancel={() => setDeletingCard(null)}
+          />
+        )}
+
+        {deletingApiConfig && (
+          <ConfirmDialog
+            title="Delete API Configuration"
+            message={`Are you sure you want to delete the API configuration "${deletingApiConfig.name}"? This action cannot be undone.`}
+            onConfirm={handleDeleteApiConfig}
+            onCancel={() => setDeletingApiConfig(null)}
           />
         )}
       </div>

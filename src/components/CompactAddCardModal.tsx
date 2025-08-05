@@ -193,15 +193,19 @@ export const CompactAddCardModal: React.FC<CompactAddCardModalProps> = ({ onClos
   const toneOptions = ['Friendly', 'Professional', 'Casual', 'Grateful'];
 
   const categoryOptions = [
-    'Retail & Shopping',
-    'Food & Beverage',
-    'Services',
-    'Professional Businesses',
     'Health & Medical',
-    'Education',
-    'Hotels & Travel',
-    'Entertainment & Recreation'
   ];
+
+  // Set default values for Health & Medical
+  React.useEffect(() => {
+    if (!formData.category) {
+      setFormData(prev => ({ 
+        ...prev, 
+        category: 'Health & Medical',
+        type: 'Hospital'
+      }));
+    }
+  }, []);
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">

@@ -1,7 +1,9 @@
-import { ReviewCard } from '../types';
+import { ReviewCard, ApiConfiguration } from '../types';
 import { supabase, isSupabaseConfigured } from './supabase';
+import { generateId } from './helpers';
 
 const STORAGE_KEY = 'scc_review_cards';
+const API_CONFIG_KEY = 'scc_api_configurations';
 
 // Helper function to validate UUID format
 const isValidUuid = (id: string): boolean => {
@@ -48,6 +50,39 @@ const transformCardToDbInsert = (card: ReviewCard) => {
   
   return baseData;
 };
+
+// Transform ApiConfiguration to database insert format
+const transformApiConfigToDbInsert = (config: ApiConfiguration) => {
+  const baseData = {
+    name: config.name,
+    provider: config.provider,
+    api_key: config.apiKey,
+    model: config.model,
+    is_active: config.isActive,
+    priority: config.priority,
+    created_at: config.createdAt || new Date().toISOString(),
+    updated_at: config.updatedAt || new Date().toISOString()
+  };
+
+  if (isValidUuid(config.id)) {
+    return { id: config.id, ...baseData };
+  }
+  
+  return baseData;
+};
+
+// Transform database row to ApiConfiguration type
+const transformDbRowToApiConfig = (row: any): ApiConfiguration => ({
+  id: row.id,
+  name: row.name,
+  provider: row.provider,
+  apiKey: row.api_key,
+  model: row.model,
+  isActive: row.is_active,
+  priority: row.priority,
+  createdAt: row.created_at,
+  updatedAt: row.updated_at
+});
 
 // Transform ReviewCard to database update format
 const transformCardToDbUpdate = (card: ReviewCard) => ({
@@ -107,6 +142,46 @@ export const storage = {
   _getLocalCardBySlug(slug: string): ReviewCard | null {
     const cards = this._getLocalCards();
     return cards.find(card => card.slug === slug) || null;
+  },
+
+  // API Configuration local storage methods
+  _getLocalApiConfigs(): ApiConfiguration[] {
+    try {
+      const stored = localStorage.getItem(API_CONFIG_KEY);
+      return stored ? JSON.parse(stored) : [];
+    } catch (error) {
+      console.error('Error reading API configs from localStorage:', error);
+      return [];
+    }
+  },
+
+  _saveLocalApiConfigs(configs: ApiConfiguration[]): void {
+    try {
+      localStorage.setItem(API_CONFIG_KEY, JSON.stringify(configs));
+    } catch (error) {
+      console.error('Error saving API configs to localStorage:', error);
+    }
+  },
+
+  _addLocalApiConfig(config: ApiConfiguration): void {
+    const configs = this._getLocalApiConfigs();
+    configs.push(config);
+    this._saveLocalApiConfigs(configs);
+  },
+
+  _updateLocalApiConfig(updatedConfig: ApiConfiguration): void {
+    const configs = this._getLocalApiConfigs();
+    const index = configs.findIndex(config => config.id === updatedConfig.id);
+    if (index !== -1) {
+      configs[index] = updatedConfig;
+      this._saveLocalApiConfigs(configs);
+    }
+  },
+
+  _deleteLocalApiConfig(configId: string): void {
+    const configs = this._getLocalApiConfigs();
+    const filteredConfigs = configs.filter(config => config.id !== configId);
+    this._saveLocalApiConfigs(filteredConfigs);
   },
 
   async getCards(): Promise<ReviewCard[]> {
@@ -396,6 +471,123 @@ export const storage = {
     } catch (error) {
       console.error('Error during migration:', error);
       console.log('Migration failed - keeping data in localStorage');
+    }
+  },
+
+  // API Configuration management methods
+  async getApiConfigurations(): Promise<ApiConfiguration[]> {
+    try {
+      if (isSupabaseConfigured() && supabase) {
+        try {
+          console.log('Fetching API configurations from Supabase...');
+          const { data, error } = await supabase
+            .from('api_configurations')
+            .select('*')
+            .order('priority', { ascending: true });
+
+          if (error) {
+            console.error('Supabase error, falling back to localStorage:', error);
+            return this._getLocalApiConfigs();
+          }
+
+          const supabaseConfigs = (data || []).map(transformDbRowToApiConfig);
+          this._saveLocalApiConfigs(supabaseConfigs);
+          return supabaseConfigs;
+        } catch (supabaseError) {
+          console.error('Supabase connection failed, using localStorage:', supabaseError);
+          return this._getLocalApiConfigs();
+        }
+      } else {
+        return this._getLocalApiConfigs();
+      }
+    } catch (error) {
+      console.error('Error loading API configurations:', error);
+      return this._getLocalApiConfigs();
+    }
+  },
+
+  async addApiConfiguration(config: ApiConfiguration): Promise<boolean> {
+    try {
+      this._addLocalApiConfig(config);
+
+      if (isSupabaseConfigured() && supabase) {
+        try {
+          const insertData = transformApiConfigToDbInsert(config);
+          const { error } = await supabase
+            .from('api_configurations')
+            .upsert([insertData], { onConflict: 'id' });
+
+          if (error) {
+            console.error('Error adding API config to Supabase:', error);
+          }
+        } catch (supabaseError) {
+          console.error('Supabase connection failed:', supabaseError);
+        }
+      }
+      return true;
+    } catch (error) {
+      console.error('Error adding API configuration:', error);
+      return false;
+    }
+  },
+
+  async updateApiConfiguration(config: ApiConfiguration): Promise<boolean> {
+    try {
+      this._updateLocalApiConfig(config);
+
+      if (isSupabaseConfigured() && supabase) {
+        try {
+          const updateData = {
+            name: config.name,
+            provider: config.provider,
+            api_key: config.apiKey,
+            model: config.model,
+            is_active: config.isActive,
+            priority: config.priority,
+            updated_at: new Date().toISOString()
+          };
+
+          const { error } = await supabase
+            .from('api_configurations')
+            .update(updateData)
+            .eq('id', config.id);
+
+          if (error) {
+            console.error('Error updating API config in Supabase:', error);
+          }
+        } catch (supabaseError) {
+          console.error('Supabase connection failed:', supabaseError);
+        }
+      }
+      return true;
+    } catch (error) {
+      console.error('Error updating API configuration:', error);
+      return false;
+    }
+  },
+
+  async deleteApiConfiguration(configId: string): Promise<boolean> {
+    try {
+      this._deleteLocalApiConfig(configId);
+
+      if (isSupabaseConfigured() && supabase) {
+        try {
+          const { error } = await supabase
+            .from('api_configurations')
+            .delete()
+            .eq('id', configId);
+
+          if (error) {
+            console.error('Error deleting API config from Supabase:', error);
+          }
+        } catch (supabaseError) {
+          console.error('Supabase connection failed:', supabaseError);
+        }
+      }
+      return true;
+    } catch (error) {
+      console.error('Error deleting API configuration:', error);
+      return false;
     }
   },
 
