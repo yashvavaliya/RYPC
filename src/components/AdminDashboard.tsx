@@ -511,6 +511,7 @@ export const AdminDashboard: React.FC = () => {
                           <button
                             onClick={() => setDeletingCard(card)}
                             className="inline-flex items-center justify-center px-3 py-2 bg-red-600/20 text-red-400 rounded-lg hover:bg-red-600/30 transition-colors duration-200"
+                           title="Delete Card"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>

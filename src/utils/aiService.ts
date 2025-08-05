@@ -1,6 +1,7 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { ApiConfiguration } from '../types';
 import { storage } from './storage';
+import { smitHospitalInfo, smitHospitalServices } from './smitHospitalServices';
 
 // OpenAI API interface
 interface OpenAIResponse {
@@ -180,7 +181,11 @@ export class AIReviewService {
   }
 
   async generateReview(request: ReviewRequest, maxRetries: number = 5): Promise<GeneratedReview> {
-    const { businessName, category, type, highlights, selectedServices, starRating, language, tone, useCase } = request;
+    // Force all reviews to be for Smit Hospital only
+    const businessName = "Smit Hospital";
+    const category = "Health & Medical";
+    const type = "Gynecological Hospital";
+    const { highlights, selectedServices, starRating, language, tone, useCase } = request;
 
     // Get active API configurations
     const apiConfigs = await this.getActiveApiConfigs();
@@ -188,101 +193,94 @@ export class AIReviewService {
       throw new Error('No active API configurations found. Please configure APIs in admin panel.');
     }
 
-    // Enhanced sentiment guide with more nuanced descriptions
-    const sentimentGuide = {
-      1: "Disappointed with medical care, mentioning specific issues with treatment, staff, or facilities",
-      2: "Below expectations with some medical/service issues, but acknowledging staff effort",
-      3: "Balanced medical experience with both positive and areas for improvement",
-      4: "Satisfied with medical care, good doctors and staff, would recommend",
-      5: "Exceptional medical care, outstanding doctors and staff, highly recommend to others"
-    };
+    // Smit Hospital specific context from smit-hospital.txt
+    const smitContext = `
+Smit Hospital is a well-established Gynecological Hospital in Varachha, Surat with 15+ years of experience.
+Led by Dr. Vitthal F. Patel (M.B., D.G.O.), Dr. Vishal Savani, and Mrs. Reena V. Patel.
+Over 1 lakh patient consultations and 6000+ successful deliveries.
+Specializes in normal, painless, and cesarean deliveries, high-risk pregnancies.
+Offers comprehensive gynecological services, IVF treatments, and unique wellness programs.
+Known for advanced sonography systems, modern equipment, and compassionate care.
+Features Garbh Sanskar Program, menopause guidance, adolescent counseling, and physiotherapy.
+Provides ethical, transparent, patient-first approach in a homely environment.
+`;
 
-    // Language options for medical reviews
-    const languageOptions = [
-      "English",
-      "Gujarati",
-      "Hindi", 
+    // Generate unique review structures
+    const reviewStructures = [
+      "personal_experience_narrative",
+      "service_quality_focus", 
+      "doctor_staff_appreciation",
+      "facility_equipment_highlight",
+      "delivery_experience_story",
+      "comprehensive_care_review",
+      "wellness_program_mention",
+      "family_support_emphasis"
     ];
     
-    const selectedLanguage = language || languageOptions[Math.floor(Math.random() * languageOptions.length)];
-    const selectedTone = tone || 'Friendly';
-    const selectedUseCase = useCase || 'Customer review';
+    const selectedStructure = reviewStructures[Math.floor(Math.random() * reviewStructures.length)];
 
-    // Medical service-specific instructions
+    const selectedLanguage = language || 'English';
+    const selectedTone = tone || 'Friendly';
+
+    // Service-specific instructions based on Smit Hospital offerings
     let serviceInstructions = '';
     if (selectedServices && selectedServices.length > 0) {
       const shuffledServices = [...selectedServices].sort(() => Math.random() - 0.5);
       const selectedCount = Math.min(3, shuffledServices.length);
       const servicesToMention = shuffledServices.slice(0, selectedCount);
       serviceInstructions = `
-Focus on these medical aspects naturally: ${servicesToMention.join(', ')}. 
-Mention them as patient experience - treatment quality, staff care, facility cleanliness, etc.`;
+Naturally incorporate these specific Smit Hospital services: ${servicesToMention.join(', ')}. 
+Mention them as authentic patient experiences based on Smit Hospital's actual offerings.`;
     }
 
-    // Language-specific instructions for medical reviews
+    // Language-specific instructions for Smit Hospital reviews
     let languageInstruction = "";
     switch (selectedLanguage) {
       case "English":
-        languageInstruction = "Write in natural, conversational English like a genuine patient. Use varied sentence structures and authentic medical experience expressions.";
+        languageInstruction = "Write in natural, conversational English like a genuine Smit Hospital patient. Use varied sentence structures and authentic gynecological care expressions.";
         break;
       case "Gujarati":
-        languageInstruction = `Write entirely in Gujarati script.transliteration in english. Use natural Gujarati expressions for medical experiences. Vary sentence structure. Place hospital name naturally within sentences, never at the beginning.`;
+        languageInstruction = `Write entirely in Gujarati script with English transliteration. Use natural Gujarati expressions for gynecological care experiences at Smit Hospital. Vary sentence structure naturally.`;
         break;
       case "Hindi":
-        languageInstruction = `Write entirely in Hindi script. transliteration in english. Use authentic Hindi expressions for medical experiences. Mix formal and informal tone naturally. Place hospital name organically within sentences, avoid starting with it.`;
+        languageInstruction = `Write entirely in Hindi script with English transliteration. Use authentic Hindi expressions for women's healthcare experiences at Smit Hospital. Mix formal and informal tone naturally.`;
         break;
     }
 
-    // Medical context for SMIT Hospital
-    const getMedicalContext = (businessName: string) => {
-      if (businessName.toLowerCase().includes('smit')) {
-        return 'gynecological care, maternity services, delivery experience, prenatal care, doctor expertise, nursing staff, facility cleanliness, consultation quality, medical equipment, patient comfort, treatment effectiveness, billing transparency, emergency handling';
-      }
-      return 'doctor expertise, consultation quality, staff care, facility cleanliness, waiting time, treatment effectiveness, medical equipment, patient comfort, billing transparency';
-    };
 
     // Try each API configuration until one works
     for (const apiConfig of apiConfigs) {
       for (let attempt = 0; attempt < maxRetries; attempt++) {
-        const medicalContext = getMedicalContext(businessName);
-        
-        // Generate random structural elements for variety
-        const reviewStructures = [
-          "patient_experience_first", "doctor_recommendation", "treatment_outcome", 
-          "facility_quality", "staff_appreciation", "medical_care_quality"
-        ];
-        const selectedStructure = reviewStructures[Math.floor(Math.random() * reviewStructures.length)];
-        
-        const prompt = `You are generating authentic, natural-sounding Google Maps reviews for healthcare facilities. Each review must be unique and feel completely human-written by a real patient.
+        const prompt = `You are generating authentic, natural-sounding Google Maps reviews specifically for Smit Hospital. Each review must be completely unique with different structure and feel human-written by a real patient.
 
-HOSPITAL DETAILS:
-Name: "${businessName}" 
-Type: ${type} (Healthcare Facility)
-Medical Context: ${medicalContext}
+SMIT HOSPITAL CONTEXT:
+${smitContext}
+
+REVIEW DETAILS:
 Rating: ${starRating}/5 stars
 Language: ${selectedLanguage}
-Review Structure: ${selectedStructure}
+Unique Structure: ${selectedStructure}
 ${serviceInstructions}
 
 CRITICAL REQUIREMENTS:
-- EXACT character count: 155-170 characters
-- not use punctuation
+- EXACT character count: 155-170 characters only
+- No excessive punctuation or emojis
 - ${languageInstruction}
-- Write like a real patient sharing genuine medical experience
-- Include specific, believable medical details
+- Write like a real Smit Hospital patient sharing genuine gynecological care experience
+- Include specific, believable details about Smit Hospital services
 - Avoid generic phrases or AI-like patterns
-- Use natural, conversational language with regional authenticity
-- Mention medical aspects: ${medicalContext}
-- NO hashtags, NO emojis, NO excessive punctuation
-- Sentiment: ${sentimentGuide[starRating as keyof typeof sentimentGuide]}
+- Use natural, conversational language
+- Base content ONLY on Smit Hospital information provided
+- NO hashtags, NO generic medical terms
+- Each review must have completely different structure and approach
 
 UNIQUENESS REQUIREMENTS:
-- Never use the same opening or closing phrases
-- Vary sentence patterns completely
-- Create different narrative approaches each time
-- Use different ways to express medical experiences
+- Never repeat sentence patterns or phrases
+- Create completely different narrative approaches each time
+- Use varied ways to express Smit Hospital experiences
+- Make each review structurally and contextually unique
 
-Generate ONLY the review text (no quotes, formatting, or explanations):`;
+Generate ONLY the review text based exclusively on Smit Hospital information (no quotes, formatting, or explanations):`;
 
         try {
           let reviewText = '';
@@ -318,121 +316,25 @@ Generate ONLY the review text (no quotes, formatting, or explanations):`;
       }
     }
 
-    // Fallback to medical-specific review if all APIs fail
-    return this.getMedicalFallbackReview(request);
+    // If all APIs fail, throw error instead of using fallback
+    throw new Error('Unable to generate unique review. Please try again.');
   }
 
-  private getMedicalFallbackReview(request: ReviewRequest): GeneratedReview {
-    const { businessName, starRating, language } = request;
-    const timestamp = Date.now();
-    
-    // Medical-specific fallback reviews
-    const medicalFallbacks: Record<number, Record<string, string[]>> = {
-      1: {
-        "English": [
-          `Had issues with medical care at ${businessName}. Long waiting time and staff wasn't very helpful. Expected better treatment quality.`,
-          `Not satisfied with consultation. ${businessName} needs improvement in patient care and service quality. Disappointing experience.`
-        ],
-        "Hindi": [
-          `${businessName} में इलाज से संतुष्ट नहीं हूं। डॉक्टर से मिलने में बहुत देर लगी और स्टाफ भी सहायक नहीं था।`,
-          `चिकित्सा सेवा में सुधार की जरूरत है। ${businessName} में अनुभव निराशाजनक रहा। बेहतर उम्मीद थी।`
-        ],
-        "Gujarati": [
-          `${businessName} માં તબીબી સેવામાં સમસ્યા હતી। ડૉક્ટરને મળવામાં ઘણો સમય લાગ્યો અને સ્ટાફ પણ મદદરૂપ નહોતો.`,
-          `સારવારની ગુણવત્તામાં સુધારાની જરૂર છે. ${businessName} માં અનુભવ નિરાશાજનક રહ્યો હતો.`
-        ]
-      },
-      2: {
-        "English": [
-          `Average medical experience at ${businessName}. Some good aspects but room for improvement in patient care and facility management.`,
-          `Mixed experience with treatment. ${businessName} has potential but needs better organization and patient handling.`
-        ],
-        "Hindi": [
-          `${businessName} में औसत चिकित्सा अनुभव रहा। कुछ अच्छे पहलू थे लेकिन मरीज़ों की देखभाल में सुधार की जरूरत है।`,
-          `इलाज का मिश्रित अनुभव रहा। ${businessName} में संभावना है लेकिन बेहतर व्यवस्था की जरूरत है।`
-        ],
-        "Gujarati": [
-          `${businessName} માં સરેરાશ તબીબી અનુભવ રહ્યો. કેટલાક સારા પાસાં હતા પણ દર્દીઓની સંભાળમાં સુધારાની જરૂર છે.`,
-          `સારવારનો મિશ્ર અનુભવ રહ્યો. ${businessName} માં સંભાવના છે પણ વધુ સારી વ્યવસ્થાની જરૂર છે.`
-        ]
-      },
-      3: {
-        "English": [
-          `Good medical care at ${businessName}. Doctors were knowledgeable and staff was helpful. Overall satisfied with treatment quality.`,
-          `Decent healthcare experience. ${businessName} provided good consultation and proper treatment. Would recommend for medical needs.`
-        ],
-        "Hindi": [
-          `${businessName} में अच्छी चिकित्सा सेवा मिली। डॉक्टर जानकार थे और स्टाफ सहायक था। इलाज की गुणवत्ता से संतुष्ट हूं।`,
-          `अच्छा स्वास्थ्य सेवा अनुभव रहा। ${businessName} में उचित परामर्श और इलाज मिला। सिफारिश करूंगा।`
-        ],
-        "Gujarati": [
-          `${businessName} માં સારી તબીબી સેવા મળી. ડૉક્ટરો જાણકાર હતા અને સ્ટાફ મદદરૂપ હતો. સારવારની ગુણવત્તાથી સંતુષ્ટ છું.`,
-          `સારો આરોગ્ય સેવા અનુભવ રહ્યો. ${businessName} માં યોગ્ય સલાહ અને સારવાર મળી. ભલામણ કરીશ.`
-        ]
-      },
-      4: {
-        "English": [
-          `Excellent medical care at ${businessName}! Professional doctors and caring staff. Very satisfied with treatment and would highly recommend.`,
-          `Great healthcare experience. ${businessName} provided top-quality medical service with expert doctors. Highly recommend to others.`
-        ],
-        "Hindi": [
-          `${businessName} में उत्कृष्ट चिकित्सा सेवा! पेशेवर डॉक्टर और देखभाल करने वाला स्टाफ। इलाज से बहुत संतुष्ट हूं।`,
-          `शानदार स्वास्थ्य सेवा अनुभव रहा। ${businessName} में विशेषज्ञ डॉक्टरों के साथ उच्च गुणवत्ता की सेवा मिली।`
-        ],
-        "Gujarati": [
-          `${businessName} માં ઉત્કૃષ્ટ તબીબી સેવા! વ્યાવસાયિક ડૉક્ટરો અને સંભાળ રાખનારો સ્ટાફ. સારવારથી ખૂબ સંતુષ્ટ છું.`,
-          `શાનદાર આરોગ્ય સેવા અનુભવ રહ્યો. ${businessName} માં નિષ્ણાત ડૉક્ટરો સાથે ઉચ્ચ ગુણવત્તાની સેવા મળી.`
-        ]
-      },
-      5: {
-        "English": [
-          `Outstanding medical care at ${businessName}! Exceptional doctors, excellent staff, and top-quality treatment. Highly recommend to everyone!`,
-          `Absolutely excellent healthcare! ${businessName} provided world-class medical service with caring doctors. Perfect experience, 5 stars!`
-        ],
-        "Hindi": [
-          `${businessName} में अद्भुत चिकित्सा सेवा! असाधारण डॉक्टर, उत्कृष्ट स्टाफ और उच्च गुणवत्ता का इलाज। सभी को सिफारिश!`,
-          `बिल्कुल उत्कृष्ट स्वास्थ्य सेवा! ${businessName} में देखभाल करने वाले डॉक्टरों के साथ विश्व स्तरीय सेवा मिली।`
-        ],
-        "Gujarati": [
-          `${businessName} માં અદ્ભુત તબીબી સેવા! અસાધારણ ડૉક્ટરો, ઉત્કૃષ્ટ સ્ટાફ અને ઉચ્ચ ગુણવત્તાની સારવાર. બધાને ભલામણ!`,
-          `બિલકુલ ઉત્કૃષ્ટ આરોગ્ય સેવા! ${businessName} માં સંભાળ રાખનારા ડૉક્ટરો સાથે વિશ્વ સ્તરીય સેવા મળી.`
-        ]
-      }
-    };
 
-    // Select appropriate fallback
-    const ratingFallbacks = medicalFallbacks[starRating] || medicalFallbacks[5];
-    const languageFallbacks = ratingFallbacks[language] || ratingFallbacks["English"];
-    const randomIndex = Math.floor(Math.random() * languageFallbacks.length);
-    let selectedFallback = languageFallbacks[randomIndex];
-    
-    // Ensure character limit (155-170)
-    if (selectedFallback.length < 155) {
-      selectedFallback += " Great care!";
-    }
-    if (selectedFallback.length > 170) {
-      selectedFallback = selectedFallback.substring(0, 167) + "...";
-    }
-    
-    return {
-      text: selectedFallback,
-      hash: this.generateHash(selectedFallback + timestamp),
-      language: language || 'English',
-      rating: starRating
-    };
-  }
 
   // Generate tagline for medical business
   async generateTagline(businessName: string, category: string, type: string): Promise<string> {
     const apiConfigs = await this.getActiveApiConfigs();
     
-    const prompt = `Generate a professional, caring tagline for "${businessName}" which is a ${type} in healthcare.
+    const prompt = `Generate a professional, caring tagline for "Smit Hospital" which is a Gynecological Hospital in Varachha, Surat.
+
+Based on Smit Hospital's 15+ years of experience, 6000+ successful deliveries, and comprehensive women's healthcare services:
 
 Requirements:
 - Keep it under 8 words
-- Focus on medical care, trust, and expertise
+- Focus on gynecological care, maternity, and women's health
 - Make it warm and professional
-- Reflect healthcare values
+- Reflect Smit Hospital's values of compassionate care
 - Avoid clichés
 
 Return only the tagline, no quotes or extra text.`;
@@ -453,139 +355,18 @@ Return only the tagline, no quotes or extra text.`;
     }
 
     // Fallback medical taglines
-    const medicalTaglines = [
-      'Your Health, Our Priority',
-      'Caring for Your Wellness',
-      'Expert Medical Care Always',
-      'Compassionate Healthcare Excellence',
-      'Trusted Medical Expertise'
+    const smitHospitalTaglines = [
+      'Caring for Women, Always',
+      'Your Trusted Maternity Partner',
+      'Excellence in Women\'s Healthcare',
+      'Compassionate Gynecological Care',
+      'Where Motherhood Begins Safely'
     ];
       
-    return medicalTaglines[Math.floor(Math.random() * medicalTaglines.length)];
+    return smitHospitalTaglines[Math.floor(Math.random() * smitHospitalTaglines.length)];
   }
 
-  private getFallbackReview(request: ReviewRequest): GeneratedReview {
-    const { businessName, category, type, selectedServices, starRating, language, tone } = request;
-    const timestamp = Date.now();
-    
-    // Enhanced fallback reviews with more variety and natural language
-    const fallbacks: Record<number, Record<string, string[]>> = {
-      1: {
-        "English": [
-          `Had issues with service at ${businessName}. Staff wasn't very helpful and waited too long. Expected better quality for what we paid.`,
-          `Not satisfied with my visit to ${businessName}. Several problems came up and they didn't handle them well. Needs improvement.`,
-          `Disappointing experience here. ${businessName} didn't meet expectations and service was below average. Won't be returning soon.`,
-          `Faced multiple issues during my visit. Staff at ${businessName} seemed overwhelmed and couldn't resolve basic problems effectively.`
-        ],
-        "Gujarati": [
-          `${businessName} ma seva thodi kharab lagi. Staff pan jyada madad nathi karyu ane wait karvanu padyu. Sudharani jarur chhe.`,
-          `Yahan experience saaru nathi rahyu. ${businessName} ma ketlik samasyao hati ane solve nathi thai. Better expect karyu hatu.`,
-          `Niraash thayo visit ma. Service quality achhi nathi ane staff pan responsive nathi. Improvement ni jarur chhe.`
-        ],
-        "Hindi": [
-          `${businessName} mein service theek nahi thi. Staff se madad nahi mili aur kaafi wait karna pada. Better expected tha.`,
-          `Yahan ka experience disappointing raha. Kuch problems hui jo properly handle nahi hui. Improvement ki zarurat hai.`,
-          `Visit se satisfied nahi hua. ${businessName} ki service average se niche lagi. Staff bhi jyada helpful nahi tha.`
-        ]
-      },
-      2: {
-        "English": [
-          `Average experience at ${businessName}. Some things were good but faced a few issues. Staff tried helping but could be better organized.`,
-          `Mixed feelings about my visit. ${businessName} has potential but needs to work on service quality. Some aspects were decent though.`,
-          `Okay service overall but room for improvement. Had some problems but staff was trying their best. Expected slightly better.`,
-          `Decent place but not exceptional. ${businessName} handled most things well but few areas need attention. Would give another chance.`
-        ],
-        "Gujarati": [
-          `${businessName} ma experience average rahyo. Kuch cheejo saari hati pan kuch problems pan hati. Staff try karyu pan better ho sake.`,
-          `Mixed feelings chhe visit baad. Kuch aspects achha laga pan service ma improvement jarur chhe. Overall okay rahyu.`,
-          `Decent service mili pan exceptional nathi. ${businessName} ma kuch areas ma sudharani jarur chhe. Phir se chance aapi sakiye.`
-        ],
-        "Hindi": [
-          `${businessName} mein experience average raha. Kuch cheezein theek thi lekin kuch issues bhi the. Staff helpful tha but improve kar sakte.`,
-          `Mixed experience raha yahan. Service decent thi but kuch areas mein better ho sakta hai. Overall okay tha visit.`,
-          `Theek-thaak service mili. ${businessName} mein potential hai but thoda aur attention chahiye. Staff cooperative tha though.`
-        ]
-      },
-      3: {
-        "English": [
-          `Good experience at ${businessName} overall. Service was decent and staff was helpful. Some minor areas could improve but satisfied with visit.`,
-          `Pleasant visit here. ${businessName} provided good service and handled things well. Nothing extraordinary but met expectations nicely.`,
-          `Decent service and friendly staff. ${businessName} managed everything properly. Average experience but would consider visiting again.`,
-          `Fair experience with good aspects. Service quality was reasonable and staff was cooperative. ${businessName} did a decent job overall.`
-        ],
-        "Gujarati": [
-          `${businessName} ma saaru experience rahyu. Service decent hati ane staff helpful hata. Kuch minor improvements ho sake pan overall satisfied.`,
-          `Pleasant visit rahyu yahan. Good service mili ane properly handle karyu. Expectations meet thai gayi. Decent place chhe.`,
-          `Fair experience hatu. ${businessName} ma service quality reasonable hati ane staff cooperative hata. Overall theek rahyu.`
-        ],
-        "Hindi": [
-          `${businessName} mein achha experience raha. Service decent thi aur staff helpful tha. Kuch areas improve ho sakte but overall satisfied.`,
-          `Pleasant visit tha yahan. Good service mili aur properly handle kiya. Expectations meet hui. Decent place hai.`,
-          `Fair experience tha overall. Service quality reasonable thi aur staff cooperative tha. ${businessName} ne decent job kiya.`
-        ]
-      },
-      4: {
-        "English": [
-          `Really good experience at ${businessName}! Professional service and quality work. Staff was friendly and helpful. Minor wait but totally worth it.`,
-          `Excellent service here. ${businessName} exceeded expectations with great staff and quality. Definitely recommend to others. Very satisfied!`,
-          `Impressed with the service quality. ${businessName} handled everything professionally. Friendly staff and good experience overall. Will return!`,
-          `Great visit! Professional team at ${businessName} provided excellent service. Quality work and helpful staff. Highly recommend this place.`
-        ],
-        "Gujarati": [
-          `${businessName} ma khub saaru experience rahyu! Professional service ane quality work. Staff friendly ane helpful hata. Recommend karis.`,
-          `Excellent service mili yahan. ${businessName} expectations exceed karyu great staff sathe. Definitely recommend karis others ne.`,
-          `Impressed thayo service quality thi. Professional team ane excellent service. Friendly staff ane good experience. Will return!`
-        ],
-        "Hindi": [
-          `${businessName} mein bahut achha experience raha! Professional service aur quality work. Staff friendly aur helpful tha. Recommend karunga.`,
-          `Excellent service mili yahan. ${businessName} ne expectations exceed kiye great staff ke saath. Definitely recommend others ko.`,
-          `Impressed hua service quality se. Professional team aur excellent service. Friendly staff aur good experience. Will return!`
-        ]
-      },
-      5: {
-        "English": [
-          `Outstanding experience at ${businessName}! Exceptional service quality and amazing staff. Everything was perfect. Highly recommend to everyone!`,
-          `Absolutely fantastic! ${businessName} provided excellent service with professional staff. Quality work and great experience. Will definitely return!`,
-          `Superb service and wonderful staff! ${businessName} exceeded all expectations. Professional, friendly, and top-quality. Highly recommended place!`,
-          `Amazing experience here! ${businessName} delivered exceptional service with caring staff. Everything was handled perfectly. 5 stars deserved!`
-        ],
-        "Gujarati": [
-          `${businessName} ma outstanding experience rahyu! Exceptional service quality ane amazing staff. Sab perfect hatu. Highly recommend!`,
-          `Absolutely fantastic! ${businessName} excellent service provide karyu professional staff sathe. Quality work ane great experience!`,
-          `Superb service ane wonderful staff! ${businessName} expectations exceed karyu. Professional, friendly ane top-quality. Highly recommended!`
-        ],
-        "Hindi": [
-          `${businessName} mein outstanding experience raha! Exceptional service quality aur amazing staff. Sab perfect tha. Highly recommend!`,
-          `Absolutely fantastic! ${businessName} ne excellent service provide kiya professional staff ke saath. Quality work aur great experience!`,
-          `Superb service aur wonderful staff! ${businessName} ne expectations exceed kiye. Professional, friendly aur top-quality. Highly recommended!`
-        ]
-      }
-    };
 
-    // Enhanced fallback selection with more randomization
-    const ratingFallbacks = fallbacks[starRating] || fallbacks[5];
-    const languageFallbacks = ratingFallbacks[language] || ratingFallbacks["English"];
-    const randomIndex = Math.floor(Math.random() * languageFallbacks.length);
-    let selectedFallback = languageFallbacks[randomIndex];
-    
-    // Add timestamp-based variation to ensure uniqueness
-    const variations = [
-      '', ' Really good!', ' Worth it!', ' Satisfied!', ' Great place!', ' Recommended!'
-    ];
-    const variation = variations[timestamp % variations.length];
-    
-    // Ensure character limit
-    if ((selectedFallback + variation).length <= 200) {
-      selectedFallback += variation;
-    }
-    
-    return {
-      text: selectedFallback,
-      hash: this.generateHash(selectedFallback + timestamp),
-      language: language || 'English',
-      rating: starRating
-    };
-  }
 
   // Generate tagline for business
   async generateTagline(businessName: string, category: string, type: string): Promise<string> {

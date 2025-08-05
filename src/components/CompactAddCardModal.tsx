@@ -196,16 +196,18 @@ export const CompactAddCardModal: React.FC<CompactAddCardModalProps> = ({ onClos
     'Health & Medical',
   ];
 
-  // Set default values for Health & Medical
+  // Set default values for Smit Hospital
   React.useEffect(() => {
     if (!formData.category) {
       setFormData(prev => ({ 
         ...prev, 
+        businessName: 'Smit Hospital',
         category: 'Health & Medical',
-        type: 'Hospital'
+        type: 'Gynecological Hospital',
+        location: 'Varachha, Surat',
+        services: smitHospitalServices.slice(0, 10) // Pre-populate with first 10 services
       }));
     }
-  }, []);
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
