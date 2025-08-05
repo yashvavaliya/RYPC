@@ -348,16 +348,35 @@ export const CompactAddCardModal: React.FC<CompactAddCardModalProps> = ({ onClos
               {/* Business Services */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Business Services / Highlights
+                  Smit Hospital Services / Highlights
                 </label>
                 <TagInput
                   tags={formData.services}
                   onChange={handleServicesChange}
-                  placeholder="Add services like 'food quality', 'staff', 'ambiance'"
+                  placeholder="Add services like 'Doctor Expertise', 'Maternity Services', 'Facility Quality'"
                 />
                 <p className="text-xs text-gray-500 mt-1">
-                  Add services that customers can highlight in their reviews
+                  Add Smit Hospital services that patients can highlight in their reviews
                 </p>
+                <div className="mt-2">
+                  <p className="text-xs text-gray-600 mb-2">Quick add popular services:</p>
+                  <div className="flex flex-wrap gap-1">
+                    {smitHospitalServices.slice(0, 8).map(service => (
+                      <button
+                        key={service}
+                        type="button"
+                        onClick={() => {
+                          if (!formData.services.includes(service)) {
+                            handleServicesChange([...formData.services, service]);
+                          }
+                        }}
+                        className="px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors"
+                      >
+                        + {service}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
 
               {/* Logo Upload */}
