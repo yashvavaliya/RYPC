@@ -265,7 +265,7 @@ Review Structure: ${selectedStructure}
 ${serviceInstructions}
 
 CRITICAL REQUIREMENTS:
-- EXACT character count: 155-170 characters (including spaces and punctuation)
+- EXACT character count: 155-170 characters
 - not use punctuation
 - ${languageInstruction}
 - Write like a real patient sharing genuine medical experience
