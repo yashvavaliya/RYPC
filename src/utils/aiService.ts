@@ -269,7 +269,6 @@ CRITICAL REQUIREMENTS:
 - not use punctuation
 - ${languageInstruction}
 - Write like a real patient sharing genuine medical experience
-- Use 1-3 sentences maximum
 - Include specific, believable medical details
 - Avoid generic phrases or AI-like patterns
 - Use natural, conversational language with regional authenticity
