@@ -1,8 +1,3 @@
-requirements:
--not repeat review and review structure.
--1st show all descriptions and after give review
--every time build new reviews, new character.
-
 🏥 Smit Hospital – Comprehensive Women’s Healthcare in Varachha, Surat
 Smit Hospital is a well-established Gynec Hospital located in Varachha, Surat, delivering excellence in women’s health and maternity care for over 15+ years. Founded and led by Dr. Vitthal F. Patel (M.B., D.G.O.), and supported by Dr. Vishal Savani (Assistant Gynac) and Mrs. Reena V. Patel (Chief Operating Officer), the hospital has earned the trust of thousands of patients through compassionate service, medical expertise, and advanced gynecological solutions.
 
