@@ -1,91 +1,132 @@
-// Smit Hospital specific services based on smit-hospital.txt content
+// Smit Hospital specific services and details extracted from smit-hospital.txt
 export const smitHospitalServices = [
   // Core Medical Services
   "Doctor Expertise",
-  "Gynecological Care", 
+  "Gynecological Care",
   "Maternity Services",
-  "Delivery Experience",
   "Prenatal Care",
-  "Consultation Quality",
-  "Nursing Staff",
-  "Staff Compassion",
-  
-  // Facility & Equipment
-  "Cleanliness",
-  "Facility Quality", 
-  "Medical Equipment",
-  "Sonography Systems",
-  "Patient Comfort",
-  "Modern Infrastructure",
-  
-  // Service Quality
-  "Waiting Time",
-  "Treatment Effectiveness",
-  "Emergency Handling",
-  "Billing Transparency",
-  "Follow-up Care",
-  "Appointment Scheduling",
-  
-  // Specialized Services
-  "IVF Services",
-  "Infertility Treatment",
-  "Laparoscopic Procedures",
-  "High-Risk Pregnancy Care",
+  "Delivery Experience",
   "Cesarean Delivery",
   "Normal Delivery",
   "Painless Delivery",
-  
+  "Infertility Treatment",
+  "IVF Services",
+  "High-Risk Pregnancy Care",
+  "Laparoscopic Procedures",
+  "Gynecological Surgeries",
+  "Pap Smear & Cancer Screening",
+  "Diagnosis of Vaginal Infections",
+  "Endometriosis & Ovarian Cyst Management",
+  "Dysfunctional Uterine Bleeding (DUB)",
+  "Pelvic Inflammatory Disease (PID) Treatment",
+  "Oncogynecology Counseling",
+  "IUI & Infertility Counseling",
+  "Preconception Clinics",
+  "Menopause Clinics",
+
   // Wellness Programs
   "Garbh Sanskar Program",
-  "Menopause Guidance", 
+  "Month-wise Antenatal Guidance",
+  "Yoga & Music Therapy",
+  "Mantra Chanting",
+  "Counseling & Emotional Support",
   "Adolescent Counseling",
-  "Physiotherapy",
-  "Family Planning Services",
-  
-  // Patient Experience
-  "Patient Privacy",
-  "Family Support",
-  "Discharge Process",
+  "Mental Health for Teens",
+  "STD Prevention",
+  "Menstrual & PCOS Guidance",
+  "Nutrition & Micronutrients",
+  "Substance Abuse Awareness",
+  "Physiotherapy Department",
+
+  // Family Planning
+  "Tubal Ligation",
+  "Vasectomy",
+  "Contraception Counseling",
+  "Reproductive Rights Education",
+
+  // Facility & Equipment
+  "Modern Infrastructure",
+  "Dedicated Labor Rooms",
+  "High-End Diagnostic Equipment",
+  "Advanced Sonography Systems",
+  "Full Fetal Monitoring",
+  "Cleanliness & Infection Control",
+  "Homely & Comfortable Environment",
+
+  // Service Quality
+  "Treatment Effectiveness",
+  "Consultation Quality",
+  "Nursing Staff",
+  "Staff Compassion",
+  "Appointment Scheduling",
+  "Billing Transparency",
+  "Waiting Time Management",
+  "Follow-up Care",
+  "Emergency Handling",
   "Pain Management",
-  "Infection Control",
-  "Homely Environment"
+  "Patient Comfort",
+  "Discharge Process",
+  "Family Support",
+  "Patient Privacy",
 ];
 
 export const smitHospitalInfo = {
   name: "Smit Hospital",
   category: "Health & Medical",
-  type: "Gynecological Hospital",
+  type: "Gynecological & Maternity Hospital",
   location: "Varachha, Surat",
+  website: "www.smithospitals.com",
+  googleReviewLink: "Leave a Review",
   experience: "15+ years",
-  deliveries: "6000+ successful deliveries",
   consultations: "1 lakh+ patient consultations",
-  
+  deliveries: "6000+ successful deliveries",
+
   keyDoctors: [
-    "Dr. Vitthal F. Patel (M.B., D.G.O.)",
-    "Dr. Vishal Savani (Assistant Gynac)",
-    "Mrs. Reena V. Patel (Chief Operating Officer)"
+    "Dr. Vitthal F. Patel (M.B., D.G.O.) – Founder",
+    "Dr. Vishal Savani – Assistant Gynac",
+    "Mrs. Reena V. Patel – Chief Operating Officer"
   ],
-  
+
   specializations: [
+    "High-risk pregnancies (PET, GDM, cardiac, obesity)",
     "Normal, painless, and cesarean deliveries",
-    "High-risk pregnancies (PET, GDM, cardiac conditions, obesity)",
-    "Gynecological surgeries and laparoscopic procedures", 
-    "IVF and infertility treatments",
-    "Comprehensive women's healthcare"
+    "Advanced gynecological surgeries & laparoscopic procedures",
+    "Infertility treatment including IVF (with lab tie-up)",
+    "Holistic care for pregnancy, menopause, adolescents",
   ],
-  
+
   uniquePrograms: [
-    "Garbh Sanskar Program - prenatal wellness rooted in Indian tradition",
-    "Menopause guidance and counseling",
-    "Adolescent counseling for teens",
-    "Physiotherapy department for recovery"
+    "Garbh Sanskar Program rooted in Indian tradition",
+    "Menopause counseling and physical wellness",
+    "Adolescent mental & sexual health counseling",
+    "Physiotherapy for post-surgery & injury recovery",
+    "Free wellness and awareness sessions"
   ],
-  
+
   facilities: [
-    "Advanced sonography systems",
-    "High-tech ultrasound machines",
-    "Dedicated labor rooms",
-    "Modern diagnostic equipment",
-    "Friendly, compassionate staff environment"
-  ]
+    "Modern diagnostic & treatment rooms",
+    "Advanced ultrasound & fetal monitoring equipment",
+    "Hygienic, peaceful & homely patient environment",
+    "Compassionate and qualified staff",
+    "Technology-supported emergency care"
+  ],
+
+  values: [
+    "Ethical, transparent, and patient-first approach",
+    "Safe, comfortable environment for women",
+    "Holistic wellness and emotional well-being",
+    "Empathy, trust, and lifelong care"
+  ],
+
+  reviewGenerationRules: {
+    avoidRepetition: true,
+    maxCharacters: 200,
+    minCharacters: 150,
+    varyStructure: true,
+    noAIHints: true,
+    generateBasedOnDescription: true,
+    allowRealtimeUniqueness: true,
+    shouldFeelHumanWritten: true,
+    storePreviousReviews: true
+  }
 };
