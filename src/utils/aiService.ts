@@ -226,10 +226,10 @@ Mention them as patient experience - treatment quality, staff care, facility cle
         languageInstruction = "Write in natural, conversational English like a genuine patient. Use varied sentence structures and authentic medical experience expressions.";
         break;
       case "Gujarati":
-        languageInstruction = `Write entirely in Gujarati script (ગુજરાતી). Use natural Gujarati expressions for medical experiences. Vary sentence structure. Place hospital name naturally within sentences, never at the beginning.`;
+        languageInstruction = `Write entirely in Gujarati script.transliteration in english. Use natural Gujarati expressions for medical experiences. Vary sentence structure. Place hospital name naturally within sentences, never at the beginning.`;
         break;
       case "Hindi":
-        languageInstruction = `Write entirely in Hindi script (हिंदी). Use authentic Hindi expressions for medical experiences. Mix formal and informal tone naturally. Place hospital name organically within sentences, avoid starting with it.`;
+        languageInstruction = `Write entirely in Hindi script. transliteration in english. Use authentic Hindi expressions for medical experiences. Mix formal and informal tone naturally. Place hospital name organically within sentences, avoid starting with it.`;
         break;
     }
 
@@ -266,6 +266,7 @@ ${serviceInstructions}
 
 CRITICAL REQUIREMENTS:
 - EXACT character count: 155-170 characters (including spaces and punctuation)
+- not use punctuation
 - ${languageInstruction}
 - Write like a real patient sharing genuine medical experience
 - Use 1-3 sentences maximum
